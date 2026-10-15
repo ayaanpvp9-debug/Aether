@@ -1,27 +1,59 @@
-import { useEffect, useRef, useState } from 'react';
-import { motion, useMotionValue, useMotionValueEvent, useScroll, useTransform, type Variants } from 'motion/react';
+import { Fragment, useEffect, useRef, useState } from 'react';
+import { motion, useScroll, useTransform, type Variants } from 'motion/react';
 import { Button } from '../../components/ui/Button';
-import { TextReveal } from '../../components/ui/TextReveal';
 import { formatClock, useNow } from '../../hooks/useClock';
-import { usePrefersReducedMotion } from '../../hooks/useMediaQuery';
-import { clamp } from '../../lib/math';
-import { EASE_OUT } from '../../lib/motion';
+import { useFinePointer, usePrefersReducedMotion } from '../../hooks/useMediaQuery';
+import { clamp, damp } from '../../lib/math';
+import { EASE_EXPO, EASE_OUT } from '../../lib/motion';
+import { useMotionPaused } from '../../lib/motion-pause';
 import { scrollToSection } from '../../lib/scroll';
-import { createStore, useStore, type Store } from '../../lib/store';
-import { OrbCanvas, type OrbHandle } from './OrbCanvas';
-import { Particles, type ParticlesHandle } from './Particles';
-import type { OrbStats } from './orb-renderer';
+import { HeroBackdrop } from './HeroBackdrop';
+import { HeroConveyor } from './HeroConveyor';
 import './Hero.css';
 
+const LEDE =
+  'VELTRIX is a concept studio for cinematic websites, full-stack products and interactive brand systems — engineered for teams that refuse to blend in.';
+
 const rise: Variants = {
-  hidden: { opacity: 0, y: 22 },
+  hidden: { opacity: 0, y: 16 },
   visible: (delay: number = 0) => ({ opacity: 1, y: 0, transition: { duration: 1.1, ease: EASE_OUT, delay } }),
 };
 
 const fade: Variants = {
   hidden: { opacity: 0 },
-  visible: (delay: number = 0) => ({ opacity: 1, transition: { duration: 1.4, ease: EASE_OUT, delay } }),
+  visible: (delay: number = 0) => ({ opacity: 1, transition: { duration: 1.2, ease: EASE_OUT, delay } }),
 };
+
+/** Headline lines rise out of their mask and settle from a slight skew — then stay put. */
+const lineReveal: Variants = {
+  hidden: { y: '112%', skewY: 4, opacity: 0 },
+  visible: (delay: number = 0) => ({
+    y: '0%',
+    skewY: 0,
+    opacity: 1,
+    transition: {
+      y: { duration: 1.45, ease: EASE_EXPO, delay },
+      skewY: { duration: 1.45, ease: EASE_EXPO, delay },
+      opacity: { duration: 0.75, ease: EASE_OUT, delay },
+    },
+  }),
+};
+
+const wordRise: Variants = {
+  hidden: { opacity: 0, y: '0.65em' },
+  visible: (delay: number = 0) => ({ opacity: 1, y: '0em', transition: { duration: 0.9, ease: EASE_OUT, delay } }),
+};
+
+/** Entrance timeline (seconds after the intro hands over). */
+const T = {
+  line1: 0.08,
+  line2: 0.24,
+  topline: 0.5,
+  lede: 0.62,
+  annotation: 0.85,
+  ctas: 0.9,
+  scroll: 1.25,
+} as const;
 
 function LocalClock() {
   const now = useNow();
@@ -36,76 +68,28 @@ function LocalClock() {
   );
 }
 
-function RenderPanel({ store }: { store: Store<OrbStats | null | undefined> }) {
-  const stats = useStore(store);
-  const engine = stats === null ? 'CSS fallback' : (stats?.engine ?? 'Starting…');
-  return (
-    <dl className="vx-hero__panel-rows">
-      <div>
-        <dt>Engine</dt>
-        <dd>{engine}</dd>
-      </div>
-      <div>
-        <dt>Frame rate</dt>
-        <dd>{stats ? (stats.mode === 'static' ? 'Static (reduced motion)' : `${stats.fps} fps`) : '—'}</dd>
-      </div>
-      <div>
-        <dt>Resolution</dt>
-        <dd>{stats ? `${stats.scale.toFixed(2)}×` : '—'}</dd>
-      </div>
-    </dl>
-  );
-}
-
-function OrbitRing() {
-  const ticks = Array.from({ length: 72 }, (_, i) => i);
-  return (
-    <svg className="vx-hero__ring" viewBox="0 0 400 400" aria-hidden="true">
-      <circle cx="200" cy="200" r="196" className="vx-hero__ring-line" />
-      {ticks.map((i) => {
-        const angle = (i / ticks.length) * Math.PI * 2;
-        const long = i % 6 === 0;
-        const r1 = 196;
-        const r2 = long ? 186 : 191;
-        return (
-          <line
-            key={i}
-            x1={200 + Math.cos(angle) * r1}
-            y1={200 + Math.sin(angle) * r1}
-            x2={200 + Math.cos(angle) * r2}
-            y2={200 + Math.sin(angle) * r2}
-            className={long ? 'vx-hero__tick vx-hero__tick--long' : 'vx-hero__tick'}
-          />
-        );
-      })}
-    </svg>
-  );
-}
-
 export function Hero({ ready }: { ready: boolean }) {
   const sectionRef = useRef<HTMLElement>(null);
-  const orbWrapRef = useRef<HTMLDivElement>(null);
-  const orbRef = useRef<OrbHandle>(null);
-  const particlesRef = useRef<ParticlesHandle>(null);
+  const lightRef = useRef<HTMLDivElement>(null);
+  // Reduced motion keeps the hero alive but calmer: loops slow down and the
+  // scroll-linked / parallax movement is dropped. "Pause" freezes the loops.
   const reduced = usePrefersReducedMotion();
-  const [statsStore] = useState(() => createStore<OrbStats | null | undefined>(undefined));
+  const paused = useMotionPaused();
+  const pace = reduced ? 0.6 : 1;
+  const finePointer = useFinePointer();
   const [fontsReady, setFontsReady] = useState(false);
   const play = ready && fontsReady;
+  const animateState = play ? 'visible' : 'hidden';
 
-  const coordX = useMotionValue(0);
-  const coordY = useMotionValue(0);
-  const coordXText = useTransform(coordX, (v) => `${v >= 0 ? '+' : '−'}${Math.abs(v).toFixed(3)}`);
-  const coordYText = useTransform(coordY, (v) => `${v >= 0 ? '+' : '−'}${Math.abs(v).toFixed(3)}`);
-
-  // Scroll-linked exit: the stage drifts up and dissolves while the orb sinks.
+  // Scroll-linked exit: the copy drifts up and dissolves, the headline lines
+  // part horizontally, and the backdrop type moves at its own depths.
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ['start start', 'end start'] });
   const stageY = useTransform(scrollYProgress, [0, 1], [0, -120]);
   const stageOpacity = useTransform(scrollYProgress, [0, 0.72], [1, 0]);
-  const orbScale = useTransform(scrollYProgress, [0, 1], [1, 0.78]);
-  const orbY = useTransform(scrollYProgress, [0, 1], [0, 140]);
-  useMotionValueEvent(scrollYProgress, 'change', (v) => orbRef.current?.setScroll(v));
+  const line1X = useTransform(scrollYProgress, [0, 1], ['0vw', '-7vw']);
+  const line2X = useTransform(scrollYProgress, [0, 1], ['0vw', '7vw']);
 
-  // Wait for the display face so the headline never reveals in a fallback font.
+  // Wait for the display face so nothing reveals in a fallback font.
   useEffect(() => {
     let cancelled = false;
     const done = () => !cancelled && setFontsReady(true);
@@ -117,120 +101,185 @@ export function Hero({ ready }: { ready: boolean }) {
     };
   }, []);
 
-  // Pointer → orb, particles, coordinates and CSS parallax (no React re-renders).
+  // Visibility flag (pauses the CSS loops off-screen) and, on fine pointers,
+  // a damped cursor light + parallax variables — all without React re-renders.
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
+
     let inView = true;
+    let raf = 0;
     const observer = new IntersectionObserver(([entry]) => {
       inView = entry?.isIntersecting ?? false;
+      section.dataset.inview = String(inView);
+      if (inView) kick();
     });
     observer.observe(section);
 
-    const onMove = (event: PointerEvent) => {
-      const wrap = orbWrapRef.current;
-      if (!inView || !wrap) return;
-      const rect = wrap.getBoundingClientRect();
-      const nx = clamp((event.clientX - (rect.left + rect.width / 2)) / (rect.width / 2), -1.6, 1.6);
-      const ny = clamp(-(event.clientY - (rect.top + rect.height / 2)) / (rect.height / 2), -1.6, 1.6);
-      orbRef.current?.setPointer(nx, ny);
-      orbRef.current?.setHover(Math.hypot(nx, ny) < 0.72);
-      particlesRef.current?.setPointer(nx / 1.6, ny / 1.6);
-      coordX.set(nx);
-      coordY.set(ny);
-      section.style.setProperty('--px', (nx / 1.6).toFixed(3));
-      section.style.setProperty('--py', (ny / 1.6).toFixed(3));
-    };
-    const onLeave = () => orbRef.current?.setHover(false);
+    const light = lightRef.current;
+    const interactive = finePointer && !!light;
 
-    window.addEventListener('pointermove', onMove, { passive: true });
-    document.documentElement.addEventListener('pointerleave', onLeave);
+    let clientX = 0;
+    let clientY = 0;
+    let hasPointer = false;
+    let last = 0;
+    const cur = { x: 0, y: 0, px: 0, py: 0 };
+
+    const tick = (now: number) => {
+      raf = 0;
+      if (!light || !hasPointer || !inView) return;
+      const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60;
+      last = now;
+      const rect = section.getBoundingClientRect();
+      const tx = clientX - rect.left;
+      const ty = clientY - rect.top;
+      const tpx = clamp((tx / rect.width) * 2 - 1, -1, 1);
+      const tpy = clamp((ty / rect.height) * 2 - 1, -1, 1);
+      cur.x = damp(cur.x, tx, 7, dt);
+      cur.y = damp(cur.y, ty, 7, dt);
+      cur.px = damp(cur.px, tpx, 2.6, dt);
+      cur.py = damp(cur.py, tpy, 2.6, dt);
+      light.style.transform = `translate3d(${cur.x.toFixed(1)}px, ${cur.y.toFixed(1)}px, 0)`;
+      section.style.setProperty('--px', cur.px.toFixed(4));
+      section.style.setProperty('--py', cur.py.toFixed(4));
+      const settled =
+        Math.abs(tx - cur.x) < 0.5 && Math.abs(ty - cur.y) < 0.5 && Math.abs(tpx - cur.px) < 0.004 && Math.abs(tpy - cur.py) < 0.004;
+      if (settled) last = 0;
+      else raf = requestAnimationFrame(tick);
+    };
+
+    function kick() {
+      if (interactive && hasPointer && !raf) raf = requestAnimationFrame(tick);
+    }
+
+    const onMove = (event: PointerEvent) => {
+      if (event.pointerType === 'touch') return;
+      clientX = event.clientX;
+      clientY = event.clientY;
+      if (!hasPointer) {
+        // Start the light under the pointer, then let it trail smoothly.
+        const rect = section.getBoundingClientRect();
+        cur.x = clientX - rect.left;
+        cur.y = clientY - rect.top;
+        hasPointer = true;
+        section.dataset.pointer = 'true';
+      }
+      kick();
+    };
+    const onLeave = () => {
+      hasPointer = false;
+      delete section.dataset.pointer;
+    };
+
+    if (interactive) {
+      window.addEventListener('pointermove', onMove, { passive: true });
+      window.addEventListener('scroll', kick, { passive: true });
+      document.documentElement.addEventListener('pointerleave', onLeave);
+    }
+
     return () => {
       observer.disconnect();
+      cancelAnimationFrame(raf);
       window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('scroll', kick);
       document.documentElement.removeEventListener('pointerleave', onLeave);
+      delete section.dataset.pointer;
+      section.style.removeProperty('--px');
+      section.style.removeProperty('--py');
     };
-  }, [coordX, coordY]);
+  }, [finePointer]);
 
-  const animateState = play ? 'visible' : 'hidden';
+  const words = LEDE.split(' ');
 
   return (
-    <section ref={sectionRef} id="top" className="vx-hero" aria-labelledby="hero-title">
+    <section ref={sectionRef} id="top" className="vx-hero" aria-labelledby="hero-title" data-play={play ? 'true' : 'false'}>
       <div className="vx-hero__bg" aria-hidden="true">
-        <div className="vx-hero__aurora vx-hero__aurora--a" />
-        <div className="vx-hero__aurora vx-hero__aurora--b" />
-        <div className="vx-hero__aurora vx-hero__aurora--c" />
-        <div className="vx-hero__grid" />
-        <Particles ref={particlesRef} className="vx-hero__particles" />
+        <div className="vx-hero__aurora vx-hero__aurora--a vx-ambient-loop" />
+        <div className="vx-hero__aurora vx-hero__aurora--b vx-ambient-loop" />
+        <div className="vx-hero__aurora vx-hero__aurora--c vx-ambient-loop" />
+        <HeroBackdrop loop={play} paused={paused} pace={pace} progress={scrollYProgress} parallax={!reduced} />
+        <div className="vx-hero__sweep vx-ambient-loop" />
+        <div ref={lightRef} className="vx-hero__light" />
         <div className="vx-hero__vignette" />
       </div>
 
       <motion.div className="vx-hero__stage" style={reduced ? undefined : { y: stageY, opacity: stageOpacity }}>
         <div className="vx-container vx-hero__inner">
-          <motion.div className="vx-hero__topline" initial="hidden" animate={animateState} variants={rise} custom={0.5}>
-            <span className="vx-eyebrow">
+          <div className="vx-hero__topline">
+            <motion.span className="vx-eyebrow" initial="hidden" animate={animateState} variants={rise} custom={T.topline}>
               <span className="vx-eyebrow__index">[VX—01]</span>
               Concept studio
-            </span>
-            <span className="vx-eyebrow vx-hero__topline-mid">Creative technology · Est. 2026</span>
-            <LocalClock />
-          </motion.div>
+            </motion.span>
+            <motion.span
+              className="vx-eyebrow vx-hero__topline-mid"
+              initial="hidden"
+              animate={animateState}
+              variants={rise}
+              custom={T.topline + 0.08}
+            >
+              Creative technology · Est. 2026
+            </motion.span>
+            <motion.span initial="hidden" animate={animateState} variants={rise} custom={T.topline + 0.16}>
+              <LocalClock />
+            </motion.span>
+          </div>
 
           <div className="vx-hero__center">
-            <motion.div
-              ref={orbWrapRef}
-              className="vx-hero__orb"
-              style={reduced ? undefined : { scale: orbScale, y: orbY }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: play ? 1 : 0 }}
-              transition={{ duration: 1.6, ease: EASE_OUT }}
-              onPointerDown={() => orbRef.current?.pulse()}
-              data-cursor="orb"
-              data-cursor-label="Pulse"
-            >
-              <div className="vx-hero__orb-glow" aria-hidden="true" />
-              <OrbitRing />
-              <OrbCanvas ref={orbRef} play={play} onStats={(s) => statsStore.set(s)} />
-              <motion.div className="vx-hero__coords" initial="hidden" animate={animateState} variants={fade} custom={1.4} aria-hidden="true">
-                <span className="vx-hero__coords-label">Pointer</span>
-                <span>
-                  X <motion.span className="vx-hero__coords-value">{coordXText}</motion.span>
-                </span>
-                <span>
-                  Y <motion.span className="vx-hero__coords-value">{coordYText}</motion.span>
-                </span>
-              </motion.div>
-            </motion.div>
-
             <h1 id="hero-title" className="vx-hero__title" data-fonts={fontsReady ? 'ready' : 'pending'}>
               <span className="sr-only">Digital, reimagined.</span>
-              <span className="vx-hero__line vx-hero__line--1" aria-hidden="true">
-                <TextReveal text="DIGITAL," by="chars" trigger="controlled" play={play} delay={0.1} stagger={0.045} duration={1.3} decorative />
-              </span>
-              <span className="vx-hero__line vx-hero__line--2" aria-hidden="true">
-                <TextReveal text="REIMAGINED." by="chars" trigger="controlled" play={play} delay={0.32} stagger={0.04} duration={1.3} decorative />
-              </span>
+              <motion.span className="vx-hero__line vx-hero__line--1" aria-hidden="true" style={reduced ? undefined : { x: line1X }}>
+                <span className="vx-hero__mask">
+                  <motion.span className="vx-hero__word" initial="hidden" animate={animateState} variants={lineReveal} custom={T.line1}>
+                    DIGITAL,
+                  </motion.span>
+                </span>
+              </motion.span>
+              <motion.span className="vx-hero__line vx-hero__line--2" aria-hidden="true" style={reduced ? undefined : { x: line2X }}>
+                <span className="vx-hero__mask">
+                  <motion.span
+                    className="vx-hero__word vx-hero__word--shine vx-ambient-loop"
+                    initial="hidden"
+                    animate={animateState}
+                    variants={lineReveal}
+                    custom={T.line2}
+                  >
+                    REIMAGINED.
+                  </motion.span>
+                </span>
+              </motion.span>
             </h1>
 
-            <motion.p className="vx-hero__annotation" initial="hidden" animate={animateState} variants={fade} custom={1.2} aria-hidden="true">
+            <motion.p className="vx-hero__annotation" initial="hidden" animate={animateState} variants={rise} custom={T.annotation} aria-hidden="true">
               <span className="vx-serif">(n.)</span> the craft of making the web feel alive
             </motion.p>
           </div>
 
           <div className="vx-hero__bottom">
-            <div className="vx-hero__copy">
-              <motion.p className="vx-hero__lede" initial="hidden" animate={animateState} variants={rise} custom={0.75}>
-                VELTRIX is a concept studio for cinematic websites, full-stack products and interactive brand systems — engineered for
-                teams that refuse to blend in.
-              </motion.p>
-              <motion.div className="vx-hero__ctas" initial="hidden" animate={animateState} variants={rise} custom={0.9}>
+            <p className="vx-hero__lede">
+              <span className="sr-only">{LEDE}</span>
+              <span aria-hidden="true">
+                {words.map((word, i) => (
+                  <Fragment key={i}>
+                    <motion.span className="vx-hero__lede-word" initial="hidden" animate={animateState} variants={wordRise} custom={T.lede + i * 0.014}>
+                      {word}
+                    </motion.span>
+                    {i < words.length - 1 ? ' ' : null}
+                  </Fragment>
+                ))}
+              </span>
+            </p>
+
+            <div className="vx-hero__ctas">
+              <motion.span className="vx-hero__cta vx-hero__cta--primary" initial="hidden" animate={animateState} variants={rise} custom={T.ctas}>
                 <Button href="#contact" size="lg" cursorLabel="Let’s talk">
                   Start a project
                 </Button>
+              </motion.span>
+              <motion.span className="vx-hero__cta" initial="hidden" animate={animateState} variants={rise} custom={T.ctas + 0.1}>
                 <Button href="#work" size="lg" variant="ghost" icon="down">
                   Explore work
                 </Button>
-              </motion.div>
+              </motion.span>
             </div>
 
             <motion.button
@@ -240,7 +289,7 @@ export function Hero({ ready }: { ready: boolean }) {
               initial="hidden"
               animate={animateState}
               variants={fade}
-              custom={1.3}
+              custom={T.scroll}
               data-cursor="link"
               aria-label="Scroll to selected work"
             >
@@ -249,14 +298,6 @@ export function Hero({ ready }: { ready: boolean }) {
               </span>
               <span aria-hidden="true">Scroll</span>
             </motion.button>
-
-            <motion.aside className="vx-hero__panel" initial="hidden" animate={animateState} variants={rise} custom={1.1} aria-label="Live render statistics">
-              <span className="vx-hero__panel-title">
-                <span className="vx-hero__live" aria-hidden="true" /> Realtime render
-              </span>
-              <RenderPanel store={statsStore} />
-              <span className="vx-hero__panel-hint">Move to steer · click the orb</span>
-            </motion.aside>
           </div>
 
           <span className="vx-hero__mark vx-hero__mark--tl" aria-hidden="true" />
@@ -265,6 +306,8 @@ export function Hero({ ready }: { ready: boolean }) {
           <span className="vx-hero__mark vx-hero__mark--br" aria-hidden="true" />
         </div>
       </motion.div>
+
+      <HeroConveyor loop={play} paused={paused} pace={pace} />
 
       <span className="vx-hero__side" aria-hidden="true">
         VELTRIX® — Concept experience — MMXXVI

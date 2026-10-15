@@ -9,7 +9,7 @@ const STACK = ['React 19', 'TypeScript', 'WebGL', 'Motion', 'Node', 'SQLite', 'A
 
 function Spark() {
   return (
-    <svg className="vx-band__spark" viewBox="0 0 24 24" aria-hidden="true">
+    <svg className="vx-band__spark vx-ambient-loop" viewBox="0 0 24 24" aria-hidden="true">
       <path d="M12 0c.8 6.4 5.6 11.2 12 12-6.4.8-11.2 5.6-12 12-.8-6.4-5.6-11.2-12-12C6.4 11.2 11.2 6.4 12 0z" />
     </svg>
   );

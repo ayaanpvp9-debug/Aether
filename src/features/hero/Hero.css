@@ -3,7 +3,8 @@
   --py: 0;
   position: relative;
   display: flex;
-  min-height: max(100svh, 680px);
+  flex-direction: column;
+  min-height: max(100svh, 600px);
   overflow: hidden;
   isolation: isolate;
 }
@@ -24,57 +25,173 @@
 }
 
 .vx-hero__aurora--a {
-  width: 70vmax;
-  height: 70vmax;
-  left: -24vmax;
-  top: -34vmax;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.42) 0%, rgba(139, 92, 246, 0.12) 38%, transparent 66%);
-  animation: vx-drift-a 26s ease-in-out infinite alternate;
+  width: 72vmax;
+  height: 72vmax;
+  left: -26vmax;
+  top: -36vmax;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.36) 0%, rgba(139, 92, 246, 0.1) 38%, transparent 66%);
+  animation: vx-drift-a 28s ease-in-out infinite alternate;
 }
 
 .vx-hero__aurora--b {
-  width: 60vmax;
-  height: 60vmax;
-  right: -26vmax;
-  top: 4vmax;
-  background: radial-gradient(circle, rgba(56, 189, 248, 0.26) 0%, rgba(56, 189, 248, 0.07) 40%, transparent 66%);
-  animation: vx-drift-b 30s ease-in-out infinite alternate;
+  width: 62vmax;
+  height: 62vmax;
+  right: -28vmax;
+  top: 2vmax;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.22) 0%, rgba(56, 189, 248, 0.06) 40%, transparent 66%);
+  animation: vx-drift-b 32s ease-in-out infinite alternate;
 }
 
 .vx-hero__aurora--c {
-  width: 40vmax;
-  height: 40vmax;
-  left: 22vw;
-  bottom: -30vmax;
-  background: radial-gradient(circle, rgba(232, 121, 249, 0.16) 0%, transparent 64%);
-  animation: vx-drift-a 34s ease-in-out infinite alternate-reverse;
+  width: 44vmax;
+  height: 44vmax;
+  left: 18vw;
+  bottom: -32vmax;
+  background: radial-gradient(circle, rgba(232, 121, 249, 0.13) 0%, transparent 64%);
+  animation: vx-drift-a 36s ease-in-out infinite alternate-reverse;
 }
 
-.vx-hero__grid {
+/* Oversized drifting type — three rows, three speeds, three depths. */
+.vx-hero__backdrop {
   position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(245, 245, 247, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(245, 245, 247, 0.04) 1px, transparent 1px);
-  background-size: 80px 80px;
-  background-position: center center;
-  -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 48%, #000 15%, transparent 72%);
-  mask-image: radial-gradient(ellipse 65% 55% at 50% 48%, #000 15%, transparent 72%);
+  /* Between the nav and the conveyor, so no row ever sits behind either. */
+  top: 72px;
+  right: 0;
+  bottom: clamp(100px, 9vw, 140px);
+  left: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: space-evenly;
+  opacity: 0;
+  transition: opacity 2.2s var(--ease-out) 0.15s;
 }
 
-.vx-hero__particles {
+.vx-hero[data-play='true'] .vx-hero__backdrop {
+  opacity: 1;
+}
+
+.vx-hero__row {
+  min-width: 0;
+}
+
+/* Pointer parallax — --px/--py are damped in JS, so no transition is needed. */
+.vx-hero__row-depth {
+  transform: translate3d(calc(var(--px) * var(--depth-x, 0px)), calc(var(--py) * var(--depth-y, 0px)), 0);
+}
+
+.vx-hero__row-track,
+.vx-hero__belt-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+.vx-hero__row-half,
+.vx-hero__belt-half {
+  display: flex;
+  flex: none;
+  align-items: center;
+}
+
+.vx-hero__row-word {
+  flex: none;
+  padding-right: 0.34em;
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(245, 245, 247, 0.038);
+}
+
+.vx-hero__row--a {
+  --depth-x: -16px;
+  --depth-y: -9px;
+  font-size: clamp(4.5rem, min(12.5vw, 21vh), 13.5rem);
+}
+
+.vx-hero__row--b {
+  --depth-x: 28px;
+  --depth-y: 14px;
+  font-size: clamp(6rem, min(21vw, 34vh), 23rem);
+}
+
+.vx-hero__row--b .vx-hero__row-word {
+  padding-right: 0.42em;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  color: rgba(196, 181, 253, 0.055);
+}
+
+.vx-hero__row--c {
+  --depth-x: -40px;
+  --depth-y: -16px;
+  font-size: clamp(3.6rem, min(9vw, 15vh), 9.5rem);
+}
+
+.vx-hero__row--c .vx-hero__row-word {
+  color: rgba(245, 245, 247, 0.032);
+}
+
+/* A soft band of light that crosses the stage every few seconds. */
+.vx-hero__sweep {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  top: -25%;
+  bottom: -25%;
+  left: 0;
+  width: 38vw;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(167, 139, 250, 0.065) 38%,
+    rgba(245, 245, 247, 0.09) 50%,
+    rgba(125, 211, 252, 0.055) 62%,
+    transparent 100%
+  );
+  opacity: 0;
+  transform: translate3d(-45vw, 0, 0) skewX(-14deg);
+  will-change: transform, opacity;
+}
+
+.vx-hero[data-play='true'] .vx-hero__sweep {
+  animation: vx-hero-sweep 15s cubic-bezier(0.45, 0, 0.25, 1) 1.4s infinite;
+}
+
+/* Cursor light (fine pointers only — positioned from JS with transforms). */
+.vx-hero__light {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 820px;
+  height: 820px;
+  margin: -410px 0 0 -410px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(139, 92, 246, 0.19) 0%,
+    rgba(110, 99, 246, 0.085) 28%,
+    rgba(56, 189, 248, 0.03) 48%,
+    transparent 66%
+  );
+  opacity: 0;
+  transition: opacity 1s var(--ease-out);
+  will-change: transform;
+}
+
+.vx-hero[data-pointer='true'] .vx-hero__light {
+  opacity: 1;
 }
 
 .vx-hero__vignette {
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 90% 75% at 50% 42%, transparent 45%, rgba(7, 7, 10, 0.8) 100%),
-    linear-gradient(to bottom, transparent 72%, var(--bg) 100%);
+    radial-gradient(ellipse 92% 78% at 50% 44%, transparent 42%, rgba(7, 7, 10, 0.82) 100%),
+    linear-gradient(to bottom, rgba(7, 7, 10, 0.5) 0%, transparent 18%, transparent 70%, var(--bg) 100%);
 }
 
 /* ───────── Layout ───────── */
@@ -82,7 +199,7 @@
 .vx-hero__stage {
   position: relative;
   display: flex;
-  flex: 1;
+  flex: 1 0 auto;
 }
 
 .vx-hero__inner {
@@ -90,9 +207,9 @@
   min-width: 0;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  gap: clamp(16px, 2vw, 28px);
-  padding-top: calc(80px + clamp(16px, 2.6vw, 36px));
-  padding-bottom: clamp(26px, 3.4vw, 46px);
+  gap: clamp(18px, 2.2vw, 30px);
+  padding-top: calc(80px + clamp(14px, 2.6vh, 32px));
+  padding-bottom: clamp(24px, 2.8vw, 40px);
 }
 
 .vx-hero__topline {
@@ -135,142 +252,27 @@
   animation: vx-live 2.4s ease-out infinite;
 }
 
-/* ───────── Centerpiece ───────── */
+/* ───────── Headline ───────── */
 
 .vx-hero__center {
   position: relative;
   display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-content: center;
   min-height: 0;
 }
 
-.vx-hero__orb {
-  position: absolute;
-  z-index: 2;
-  left: 54%;
-  top: 50%;
-  width: min(76vh, 54vw, 800px);
-  aspect-ratio: 1;
-  translate: -50% -50%;
-  touch-action: manipulation;
-}
-
-.vx-hero__orb-glow {
-  position: absolute;
-  inset: 8%;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.28) 0%, rgba(56, 189, 248, 0.1) 42%, transparent 68%);
-  transform: translate3d(calc(var(--px) * 18px), calc(var(--py) * -14px), 0);
-  transition: transform 1.2s var(--ease-out);
-}
-
-.vx-orb-canvas {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.vx-hero__ring {
-  position: absolute;
-  inset: 4%;
-  width: 92%;
-  height: 92%;
-  overflow: visible;
-  animation: vx-rotate 90s linear infinite;
-  opacity: 0.7;
-}
-
-.vx-hero__ring-line {
-  fill: none;
-  stroke: rgba(245, 245, 247, 0.07);
-  stroke-width: 1;
-}
-
-.vx-hero__tick {
-  stroke: rgba(245, 245, 247, 0.16);
-  stroke-width: 1;
-}
-
-.vx-hero__tick--long {
-  stroke: rgba(245, 245, 247, 0.38);
-}
-
-.vx-hero__coords {
-  position: absolute;
-  top: 13%;
-  right: -2%;
-  display: grid;
-  gap: 4px;
-  padding-left: 14px;
-  border-left: 1px solid var(--line-3);
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  letter-spacing: 0.1em;
-  color: var(--text-3);
-  text-transform: uppercase;
-  pointer-events: none;
-}
-
-.vx-hero__coords-label {
-  color: var(--text);
-}
-
-.vx-hero__coords-value {
-  color: var(--text-2);
-  font-variant-numeric: tabular-nums;
-}
-
-/* CSS orb used when WebGL is unavailable */
-.vx-orb-fallback {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  transform: translate3d(calc(var(--px) * 14px), calc(var(--py) * -10px), 0);
-  transition: transform 1s var(--ease-out);
-}
-
-.vx-orb-fallback__core,
-.vx-orb-fallback__ring,
-.vx-orb-fallback__shine {
-  position: absolute;
-  inset: 17%;
-  border-radius: 50%;
-}
-
-.vx-orb-fallback__core {
-  background:
-    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.55) 0%, transparent 18%),
-    radial-gradient(circle at 70% 75%, rgba(56, 189, 248, 0.6) 0%, transparent 40%),
-    radial-gradient(circle at 30% 70%, rgba(232, 121, 249, 0.45) 0%, transparent 42%),
-    radial-gradient(circle at 50% 50%, #2a1a5e 0%, #0b0a18 70%);
-  box-shadow:
-    inset -30px -40px 80px rgba(0, 0, 0, 0.7),
-    inset 20px 20px 60px rgba(139, 92, 246, 0.35),
-    0 0 120px rgba(139, 92, 246, 0.25);
-}
-
-.vx-orb-fallback__ring {
-  background: conic-gradient(from var(--vx-angle), transparent 0deg, rgba(139, 92, 246, 0.55) 70deg, transparent 140deg, rgba(56, 189, 248, 0.5) 220deg, transparent 300deg);
-  -webkit-mask: radial-gradient(circle, transparent 66%, #000 67%, #000 70%, transparent 71%);
-  mask: radial-gradient(circle, transparent 66%, #000 67%, #000 70%, transparent 71%);
-  animation: vx-angle 8s linear infinite;
-}
-
-.vx-orb-fallback__shine {
-  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.18), transparent 40%);
-  mix-blend-mode: screen;
-}
-
-/* ───────── Headline ───────── */
-
 .vx-hero__title {
   position: relative;
   z-index: 3;
+  grid-area: 1 / 1 / 2 / 3;
   display: grid;
-  gap: 0.02em;
+  gap: 0.03em;
   font-family: var(--font-display);
-  /* "REIMAGINED." ≈ 7.77 × font-size wide → this cap always fits the 1480px container. */
+  /* "REIMAGINED." ≈ 7.77 × font-size wide → the 10.6vw/10.6rem caps always fit the container;
+     the svh term keeps the first screen (headline → conveyor) inside short laptop viewports. */
   font-size: clamp(2.6rem, 10.6vw, 10.6rem);
+  font-size: clamp(2.6rem, min(10.6vw, 19.5svh), 10.6rem);
   font-weight: 600;
   line-height: 0.86;
   letter-spacing: -0.052em;
@@ -281,6 +283,11 @@
 .vx-hero__line {
   display: flex;
   white-space: nowrap;
+}
+
+/* Screen readers get sentence case, not the visual all-caps. */
+.vx-hero__title .sr-only {
+  text-transform: none;
 }
 
 /* Hidden (not just transparent) until the display face is ready, so the font swap can't register as a layout shift. */
@@ -296,20 +303,51 @@
   justify-self: end;
 }
 
-/* Luminous vertical gradient per glyph — lets the orb glow through the base of the letters. */
-.vx-hero__line--2 .vx-reveal__glyph {
-  background: linear-gradient(180deg, #f5f5f7 8%, #d9cffd 46%, rgba(139, 92, 246, 0.5) 100%);
+/* Clip window for the rise — padded so glyph overhangs and the comma never get cut. */
+.vx-hero__mask {
+  display: block;
+  overflow: hidden;
+  padding: 0.1em 0.06em 0.14em;
+  margin: -0.1em -0.06em -0.14em;
+}
+
+.vx-hero__word {
+  display: block;
+  transform-origin: 0% 100%;
+}
+
+/* Luminous fill with a slow sheen that crosses the word every few seconds. */
+.vx-hero__word--shine {
+  background-image:
+    linear-gradient(100deg, transparent 41%, rgba(255, 255, 255, 0.92) 50%, transparent 59%),
+    linear-gradient(180deg, #f5f5f7 6%, #e4dcff 44%, #a98cff 100%);
+  background-size:
+    250% 100%,
+    100% 100%;
+  background-repeat: no-repeat;
+  background-position:
+    100% 0,
+    0 0;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
+.vx-hero[data-play='true'] .vx-hero__word--shine {
+  animation: vx-hero-shine 8s cubic-bezier(0.45, 0, 0.2, 1) 1.7s infinite;
+}
+
+/* Editorial footnote tucked into the space to the right of line one. */
 .vx-hero__annotation {
   position: relative;
   z-index: 3;
-  justify-self: start;
-  max-width: 22ch;
-  margin-top: clamp(14px, 1.6vw, 22px);
+  grid-area: 1 / 2 / 2 / 3;
+  align-self: start;
+  justify-self: end;
+  max-width: 21ch;
+  margin-top: clamp(4px, 0.9vw, 14px);
+  padding-left: 14px;
+  border-left: 1px solid var(--line-3);
   font-size: 13px;
   line-height: 1.45;
   color: var(--text-3);
@@ -327,30 +365,82 @@
   z-index: 4;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-areas: 'lede scroll ctas';
   align-items: end;
-  gap: 32px;
-}
-
-.vx-hero__copy {
-  display: grid;
-  gap: 26px;
-  max-width: 460px;
+  gap: 24px 32px;
 }
 
 .vx-hero__lede {
+  grid-area: lede;
+  max-width: 440px;
   font-size: clamp(15px, 1.12vw, 17px);
   line-height: 1.6;
   color: var(--text-2);
-  text-wrap: pretty;
+}
+
+.vx-hero__lede-word {
+  display: inline-block;
 }
 
 .vx-hero__ctas {
+  grid-area: ctas;
+  justify-self: end;
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 12px;
 }
 
+.vx-hero__cta {
+  display: inline-flex;
+}
+
+/* A single glint crosses each CTA as it lands (no hover needed), and again on hover. */
+.vx-hero__cta .vx-btn__bg::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 55%;
+  background: linear-gradient(105deg, transparent 15%, rgba(255, 255, 255, 0.22) 50%, transparent 85%);
+  transform: translate3d(-140%, 0, 0) skewX(-18deg);
+  pointer-events: none;
+}
+
+.vx-hero__cta--primary .vx-btn__bg::after {
+  background: linear-gradient(105deg, transparent 15%, rgba(139, 92, 246, 0.28) 50%, transparent 85%);
+}
+
+.vx-hero[data-play='true'] .vx-hero__cta .vx-btn__bg::after {
+  animation: vx-hero-glint 1.3s var(--ease-out) 1.75s;
+}
+
+.vx-hero[data-play='true'] .vx-hero__cta + .vx-hero__cta .vx-btn__bg::after {
+  animation-delay: 1.9s;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .vx-hero__cta .vx-btn__bg::after {
+    transition: none;
+  }
+
+  .vx-hero__cta--primary:hover .vx-btn__bg::after {
+    background: linear-gradient(105deg, transparent 15%, rgba(255, 255, 255, 0.42) 50%, transparent 85%);
+    transform: translate3d(260%, 0, 0) skewX(-18deg);
+    transition: transform 1s var(--ease-out) 0.08s;
+  }
+
+  .vx-hero__cta--primary .vx-btn:hover .vx-btn__bg {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.25) inset,
+      0 22px 54px -14px rgba(56, 189, 248, 0.5),
+      0 8px 24px -10px rgba(139, 92, 246, 0.55);
+  }
+}
+
 .vx-hero__scroll {
+  grid-area: scroll;
   display: grid;
   justify-items: center;
   gap: 12px;
@@ -392,63 +482,153 @@
   animation: vx-scroll-dot 2s var(--ease-in-out) infinite;
 }
 
-.vx-hero__panel {
-  justify-self: end;
-  display: grid;
-  gap: 12px;
-  width: 268px;
-  padding: 16px 18px 14px;
-  border-radius: 18px;
-  border: 1px solid var(--line-2);
-  background: rgba(16, 17, 22, 0.46);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
-  backdrop-filter: blur(18px) saturate(140%);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  transform: translate3d(calc(var(--px) * -10px), calc(var(--py) * 8px), 0);
-  transition: transform 1.2s var(--ease-out);
+/* ───────── Conveyor ───────── */
+
+.vx-hero__conveyor {
+  /* Right inset of the pause control; the belt fades out just before it. */
+  --motion-inset: max(12px, calc(var(--gutter) - 18px));
+  position: relative;
+  z-index: 4;
+  flex: none;
+  /* Clearance for the tilted marquee band below, which rises up to ~3vw (max 40px) into the hero. */
+  margin-bottom: clamp(34px, calc(3vw + 12px), 56px);
+  background: linear-gradient(180deg, rgba(10, 10, 14, 0.5), rgba(10, 10, 14, 0.28));
 }
 
-.vx-hero__panel-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+.vx-hero__conveyor::before,
+.vx-hero__conveyor::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line-3) 16%, var(--line-3) 84%, transparent);
+  transform: scaleX(0);
+  transition: transform 1.6s var(--ease-out) 0.5s;
+}
+
+.vx-hero__conveyor::before {
+  top: 0;
+}
+
+.vx-hero__conveyor::after {
+  bottom: 0;
+}
+
+.vx-hero[data-play='true'] .vx-hero__conveyor::before,
+.vx-hero[data-play='true'] .vx-hero__conveyor::after {
+  transform: scaleX(1);
+}
+
+.vx-hero__belt {
+  overflow: hidden;
+  padding-block: clamp(14px, 1.5vw, 22px);
+  font-size: clamp(0.95rem, 1.85vw, 1.7rem);
+  --belt-fade: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 9%,
+    #000 calc(100% - var(--motion-inset) - 160px),
+    transparent calc(100% - var(--motion-inset) - 46px)
+  );
+  -webkit-mask-image: var(--belt-fade);
+  mask-image: var(--belt-fade);
+}
+
+.vx-hero__belt-reveal {
+  opacity: 0;
+  transform: translate3d(48px, 0, 0);
+  transition:
+    opacity 1.2s var(--ease-out) 0.85s,
+    transform 1.8s var(--ease-out) 0.85s;
+}
+
+.vx-hero[data-play='true'] .vx-hero__belt-reveal {
+  opacity: 1;
+  transform: none;
+}
+
+.vx-hero__belt-item {
+  flex: none;
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
   color: var(--text);
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  font-size: 10.5px;
 }
 
-.vx-hero__panel-rows {
+.vx-hero__belt-item--serif {
+  padding-inline: 0.06em;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.3em;
+  line-height: 0.95;
+  letter-spacing: 0.005em;
+  background: linear-gradient(100deg, #d8ccff 0%, #a78bfa 45%, #7dd3fc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.vx-hero__belt-sep {
+  flex: none;
+  width: 0.3em;
+  height: 0.3em;
+  margin-inline: 1.05em;
+  background: linear-gradient(135deg, var(--violet-2), var(--blue));
+  transform: rotate(45deg);
+}
+
+.vx-hero__belt-sep--open {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px rgba(245, 245, 247, 0.55);
+}
+
+/* Pause / play for every looping motion on the site (WCAG 2.2.2). */
+.vx-hero__motion {
+  position: absolute;
+  top: 50%;
+  right: var(--motion-inset);
+  z-index: 2;
   display: grid;
-  gap: 7px;
-  margin: 0;
-}
-
-.vx-hero__panel-rows div {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding-bottom: 7px;
-  border-bottom: 1px dashed var(--line);
-}
-
-.vx-hero__panel-rows dt {
-  color: var(--text-3);
-}
-
-.vx-hero__panel-rows dd {
-  margin: 0;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-top: -17px;
+  border-radius: 50%;
+  border: 1px solid var(--line-3);
+  background: rgba(10, 10, 14, 0.88);
   color: var(--text-2);
-  font-variant-numeric: tabular-nums;
+  opacity: 0;
+  transition:
+    opacity 1s var(--ease-out) 1.3s,
+    color 0.3s,
+    border-color 0.3s,
+    background-color 0.3s;
 }
 
-.vx-hero__panel-hint {
-  color: var(--text-3);
-  font-size: 10px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+.vx-hero[data-play='true'] .vx-hero__motion {
+  opacity: 1;
+}
+
+.vx-hero__motion[aria-pressed='true'] {
+  color: var(--text);
+  border-color: rgba(167, 139, 250, 0.6);
+}
+
+@media (hover: hover) {
+  .vx-hero__motion:hover {
+    color: var(--text);
+    border-color: var(--text-2);
+    background-color: rgba(22, 22, 30, 0.95);
+  }
+}
+
+.vx-hero__motion:focus-visible {
+  outline-offset: 3px;
 }
 
 /* ───────── Micro-details ───────── */
@@ -493,19 +673,19 @@
 }
 
 .vx-hero__mark--bl {
-  bottom: 14px;
+  bottom: 12px;
   left: calc(var(--gutter) - 22px);
 }
 
 .vx-hero__mark--br {
-  bottom: 14px;
+  bottom: 12px;
   right: calc(var(--gutter) - 22px);
 }
 
 .vx-hero__side {
   position: absolute;
   left: 18px;
-  top: 50%;
+  top: 46%;
   z-index: 3;
   font-family: var(--font-mono);
   font-size: 9.5px;
@@ -520,6 +700,15 @@
   opacity: 0.7;
 }
 
+/* Off-screen: freeze the CSS loops (the WAAPI loops pause themselves). */
+.vx-hero[data-inview='false'] .vx-hero__aurora,
+.vx-hero[data-inview='false'] .vx-hero__sweep,
+.vx-hero[data-inview='false'] .vx-hero__word--shine,
+.vx-hero[data-inview='false'] .vx-hero__live,
+.vx-hero[data-inview='false'] .vx-hero__scroll-dot {
+  animation-play-state: paused;
+}
+
 /* ───────── Responsive ───────── */
 
 @media (max-width: 1279px) {
@@ -528,28 +717,50 @@
   }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1199px) {
   .vx-hero__bottom {
     grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: 'lede ctas';
   }
 
-  .vx-hero__panel {
+  .vx-hero__scroll {
     display: none;
   }
+}
 
-  .vx-hero__orb {
-    width: min(70vh, 78vw, 640px);
-    left: 50%;
-  }
-
+@media (max-width: 1023px) {
   .vx-hero__topline-mid {
     display: none;
+  }
+
+  .vx-hero__bottom {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'lede'
+      'ctas';
+    gap: 22px;
+  }
+
+  .vx-hero__ctas {
+    justify-self: start;
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 1199px) and (orientation: portrait) {
+  .vx-hero__center {
+    align-content: end;
+    padding-bottom: 6px;
+  }
+
+  .vx-hero__backdrop {
+    bottom: 26%;
   }
 }
 
 @media (max-width: 767px) {
   .vx-hero {
-    min-height: max(100svh, 640px);
+    min-height: max(100svh, 620px);
   }
 
   .vx-hero__inner {
@@ -557,17 +768,6 @@
     gap: 18px;
   }
 
-  .vx-hero__center {
-    align-content: end;
-    padding-bottom: 8px;
-  }
-
-  .vx-hero__orb {
-    width: min(96vw, 52vh, 460px);
-    top: 44%;
-  }
-
-  .vx-hero__coords,
   .vx-hero__annotation,
   .vx-hero__mark {
     display: none;
@@ -577,16 +777,48 @@
     font-size: clamp(2.1rem, 11vw, 4.4rem);
   }
 
-  .vx-hero__bottom {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .vx-hero__scroll {
-    display: none;
+  .vx-hero__ctas {
+    justify-self: stretch;
   }
 
   .vx-hero__ctas > * {
     flex: 1 1 200px;
+  }
+
+  .vx-hero__ctas .vx-btn {
+    width: 100%;
+  }
+
+  .vx-hero__backdrop {
+    top: 64px;
+    bottom: 34%;
+  }
+
+  .vx-hero__row--a {
+    font-size: 21vw;
+  }
+
+  .vx-hero__row--b {
+    font-size: 31vw;
+  }
+
+  .vx-hero__row--c {
+    font-size: 16vw;
+  }
+
+  .vx-hero__sweep {
+    width: 70vw;
+  }
+
+
+  .vx-hero__belt {
+    --belt-fade: linear-gradient(
+      90deg,
+      transparent 0%,
+      #000 6%,
+      #000 calc(100% - var(--motion-inset) - 96px),
+      transparent calc(100% - var(--motion-inset) - 40px)
+    );
   }
 }
 
@@ -603,6 +835,14 @@
 
   .vx-hero__topline .vx-eyebrow {
     letter-spacing: 0.1em;
+  }
+}
+
+/* Reduced motion: everything still animates, but the pointer parallax on the backdrop type is dropped
+   (scroll-linked movement is switched off in Hero.tsx and the loops run at a calmer pace). */
+@media (prefers-reduced-motion: reduce) {
+  .vx-hero__row-depth {
+    transform: none;
   }
 }
 
@@ -626,9 +866,43 @@
   }
 }
 
-@keyframes vx-angle {
+@keyframes vx-hero-sweep {
+  0% {
+    opacity: 0;
+    transform: translate3d(-45vw, 0, 0) skewX(-14deg);
+  }
+  10%,
+  44% {
+    opacity: 1;
+  }
+  55%,
+  100% {
+    opacity: 0;
+    transform: translate3d(140vw, 0, 0) skewX(-14deg);
+  }
+}
+
+/* Sheen layer only: 100% parks it left of the word, 0% parks it right — the rest of the cycle is idle. */
+@keyframes vx-hero-shine {
+  0% {
+    background-position:
+      100% 0,
+      0 0;
+  }
+  30%,
+  100% {
+    background-position:
+      0% 0,
+      0 0;
+  }
+}
+
+@keyframes vx-hero-glint {
+  from {
+    transform: translate3d(-140%, 0, 0) skewX(-18deg);
+  }
   to {
-    --vx-angle: 360deg;
+    transform: translate3d(260%, 0, 0) skewX(-18deg);
   }
 }
 

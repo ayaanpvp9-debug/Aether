@@ -1,6 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { useSpring, type MotionValue } from 'motion/react';
-import { useFinePointer, usePrefersReducedMotion } from './useMediaQuery';
+import { useFinePointer } from './useMediaQuery';
 
 interface Magnetic<T extends HTMLElement> {
   ref: React.RefObject<T | null>;
@@ -19,8 +19,7 @@ interface Magnetic<T extends HTMLElement> {
 export function useMagnetic<T extends HTMLElement>(strength = 0.32, enabled = true): Magnetic<T> {
   const ref = useRef<T>(null);
   const fine = useFinePointer();
-  const reduced = usePrefersReducedMotion();
-  const active = enabled && fine && !reduced;
+  const active = enabled && fine;
 
   const config = { stiffness: 260, damping: 18, mass: 0.35 };
   const x = useSpring(0, config);

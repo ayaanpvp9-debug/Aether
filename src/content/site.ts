@@ -33,3 +33,9 @@ export const SOCIALS: { label: string; handle: string; href: string | null }[] =
 ];
 
 export const MARQUEE_PHRASES = ['Design without limits', 'Engineered to impress', 'Built for the future'];
+
+/** Oversized words drifting behind the hero headline (decorative). */
+export const HERO_BACKDROP_WORDS = ['Design', 'Develop', 'Innovate', 'Digital'];
+
+/** Phrases on the conveyor strip directly under the hero copy. */
+export const HERO_CONVEYOR_PHRASES = ['Creative development', 'Interactive experiences', 'Digital design', 'Built to stand out'];

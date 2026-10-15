@@ -84,6 +84,8 @@
 
 .vx-btn__label-text[data-text]::after {
   content: attr(data-text);
+  /* Decorative duplicate for the rolling label — keep it out of the accessible name. */
+  content: attr(data-text) / '';
   position: absolute;
   left: 0;
   top: 100%;

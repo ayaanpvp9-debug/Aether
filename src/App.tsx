@@ -27,7 +27,7 @@ export function App() {
   const reveal = useCallback(() => setReady(true), []);
 
   return (
-    <MotionConfig reducedMotion="user" transition={{ duration: 0.6, ease: EASE_OUT }}>
+    <MotionConfig reducedMotion="never" transition={{ duration: 0.6, ease: EASE_OUT }}>
       <ToastProvider>
         <a className="vx-skip" href="#main">
           Skip to content

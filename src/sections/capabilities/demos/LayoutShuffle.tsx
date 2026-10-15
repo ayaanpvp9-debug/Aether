@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useInView } from 'motion/react';
 import { Segmented } from '../../../components/ui/Segmented';
-import { usePrefersReducedMotion } from '../../../hooks/useMediaQuery';
 
 type Layout = 'editorial' | 'gallery' | 'split';
 
@@ -19,15 +18,13 @@ export function LayoutShuffle() {
   const [auto, setAuto] = useState(true);
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { amount: 0.6 });
-  const reduced = usePrefersReducedMotion();
-
   useEffect(() => {
-    if (!auto || !inView || reduced) return;
+    if (!auto || !inView) return;
     const timer = window.setInterval(() => {
       setLayout((current) => LAYOUTS[(LAYOUTS.findIndex((l) => l.value === current) + 1) % LAYOUTS.length]!.value);
     }, 3200);
     return () => window.clearInterval(timer);
-  }, [auto, inView, reduced]);
+  }, [auto, inView]);
 
   return (
     <div ref={ref} className="vx-shuffle">
@@ -72,7 +69,7 @@ export function LayoutShuffle() {
           layoutId="shuffle-layout"
           label="Layout preset"
         />
-        <span className="vx-demo-hint">{auto && !reduced ? 'Auto-cycling — pick one' : 'Manual'}</span>
+        <span className="vx-demo-hint">{auto ? 'Auto-cycling — pick one' : 'Manual'}</span>
       </div>
     </div>
   );

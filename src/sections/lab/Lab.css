@@ -821,12 +821,37 @@
   }
 }
 
+/* Compact sticky preview on tablets and phones: the live device stays in view while the controls
+   scroll beneath it, scaled down (zoom keeps its layout box honest) so both fit on one screen. */
 @media (max-width: 1100px) and (min-height: 760px) {
   .vx-lab__stage {
     position: sticky;
     top: 64px;
     z-index: 2;
     background-color: #0c0c11;
+    border-bottom: 1px solid var(--line);
+    /* Fills the strip above (the nav hides on scroll-down) so controls never peek out over the preview. */
+    box-shadow: 0 -64px 0 0 #0c0c11;
+  }
+
+  .vx-lab__device {
+    zoom: 0.8;
+  }
+}
+
+@media (max-width: 767px) and (min-height: 600px) {
+  .vx-lab__stage {
+    position: sticky;
+    top: 64px;
+    z-index: 2;
+    padding: 12px 14px 14px;
+    background-color: #0c0c11;
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 -64px 0 0 #0c0c11;
+  }
+
+  .vx-lab__device {
+    zoom: 0.62;
   }
 }
 

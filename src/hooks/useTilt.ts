@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useFinePointer, usePrefersReducedMotion } from './useMediaQuery';
+import { useFinePointer } from './useMediaQuery';
 
 /**
  * Pointer-reactive 3D tilt + light position, written straight to CSS custom
@@ -8,7 +8,6 @@ import { useFinePointer, usePrefersReducedMotion } from './useMediaQuery';
 export function useTilt<T extends HTMLElement>({ max = 7 }: { max?: number } = {}) {
   const ref = useRef<T>(null);
   const fine = useFinePointer();
-  const reduced = usePrefersReducedMotion();
 
   useEffect(() => {
     const el = ref.current;
@@ -16,7 +15,7 @@ export function useTilt<T extends HTMLElement>({ max = 7 }: { max?: number } = {
     let frame = 0;
     let px = 0.5;
     let py = 0.5;
-    const tilt = reduced ? 0 : max;
+    const tilt = max;
 
     const apply = () => {
       frame = 0;
@@ -49,7 +48,7 @@ export function useTilt<T extends HTMLElement>({ max = 7 }: { max?: number } = {
       el.removeEventListener('pointerleave', onLeave);
       cancelAnimationFrame(frame);
     };
-  }, [fine, reduced, max]);
+  }, [fine, max]);
 
   return ref;
 }

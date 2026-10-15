@@ -21,13 +21,13 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: 'stack',
     question: 'Which technologies power experiences like this one?',
     answer:
-      'This site runs on React 19, TypeScript and Motion, with a hand-written WebGL shader for the hero and a dependency-free Node API backed by SQLite. The principle is always the same: the smallest stack that delivers the experience.',
+      'This site runs on React 19, TypeScript and Motion, with compositor-driven typography loops in the hero and a dependency-free Node API backed by SQLite. The principle is always the same: the smallest stack that delivers the experience.',
   },
   {
     id: 'performance',
     question: 'Won’t all this motion make the site slow?',
     answer:
-      'Not when it is engineered carefully. Animations use transforms and opacity, the WebGL scene adapts its resolution to your device and pauses when off-screen, and everything calms down if your system requests reduced motion.',
+      'Not when it is engineered carefully. Animations use transforms and opacity, the hero’s moving type runs on the compositor and pauses when off-screen, and everything calms down if your system requests reduced motion.',
   },
   {
     id: 'accessibility',

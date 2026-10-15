@@ -97,12 +97,16 @@ export function LabSection() {
     const vr = viewport.getBoundingClientRect();
     const r = el.getBoundingClientRect();
     const style = getComputedStyle(el);
+    // The preview is scaled down on small screens: convert on-screen pixels back to its own CSS pixels
+    // (works whether the engine reports zoomed or unzoomed rects, and for transforms too).
+    const ownWidth = parseFloat(getComputedStyle(viewport).width);
+    const k = vr.width > 0 && ownWidth > 0 ? ownWidth / vr.width : 1;
     return {
       key,
-      x: r.left - vr.left,
-      y: r.top - vr.top,
-      w: r.width,
-      h: r.height,
+      x: (r.left - vr.left) * k,
+      y: (r.top - vr.top) * k,
+      w: r.width * k,
+      h: r.height * k,
       radius: style.borderTopLeftRadius,
       padding: `${parseFloat(style.paddingTop)} / ${parseFloat(style.paddingLeft)} px`,
       tag: el.tagName.toLowerCase(),

@@ -372,13 +372,17 @@ main:focus {
   }
 }
 
+/* Reduced motion means calmer, not frozen: fades, feedback and slow loops stay on.
+   Components individually drop parallax, scroll-linked movement, the intro and smooth scrolling. */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
-    scroll-behavior: auto !important;
+  html {
+    scroll-behavior: auto;
   }
+}
+
+/* "Pause moving text" switch (see lib/motion-pause.ts) freezes the ambient CSS loops. */
+html[data-motion-paused] .vx-ambient-loop,
+html[data-motion-paused] .vx-ambient-loop::before,
+html[data-motion-paused] .vx-ambient-loop::after {
+  animation-play-state: paused !important;
 }

@@ -418,6 +418,8 @@
 
 .vx-stack__response pre {
   margin: 0;
+  /* Reserve the 7-line JSON reply up front so the card doesn't grow (and shift the page) when it lands. */
+  min-height: calc(7 * 1.55em);
   overflow-x: auto;
   font-family: var(--font-mono);
   font-size: 11.5px;

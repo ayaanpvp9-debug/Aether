@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useInView, type Variants } from 'motion/react';
 import { ChevronLeft, ChevronRight, Info } from 'lucide-react';
 import { TESTIMONIALS } from '../../content/testimonials';
-import { usePrefersReducedMotion } from '../../hooks/useMediaQuery';
+import { useMotionPaused } from '../../lib/motion-pause';
 import { cn } from '../../lib/cn';
 import { pad2 } from '../../lib/math';
 import { EASE_OUT } from '../../lib/motion';
@@ -48,9 +48,9 @@ export function TestimonialsSection() {
   const [focused, setFocused] = useState(false);
   const rootRef = useRef<HTMLElement>(null);
   const inView = useInView(rootRef, { amount: 0.35 });
-  const reduced = usePrefersReducedMotion();
+  const motionPaused = useMotionPaused();
   const count = TESTIMONIALS.length;
-  const paused = hovered || focused || !inView || reduced;
+  const paused = hovered || focused || !inView || motionPaused;
   const current = TESTIMONIALS[index]!;
 
   const go = (delta: number) => {

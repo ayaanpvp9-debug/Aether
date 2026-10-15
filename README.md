@@ -2,7 +2,7 @@
 
 ![VELTRIX hero](public/og.jpg)
 
-A cinematic, full-stack concept-studio website: a hand-written WebGL centerpiece, an editorial dark-luxury design system, a consistent spring-based motion language, and a **real** inquiry backend (validation → sanitisation → SQLite storage with reference codes).
+A cinematic, full-stack concept-studio website: a kinetic-typography hero, an editorial dark-luxury design system, a consistent spring-based motion language, and a **real** inquiry backend (validation → sanitisation → SQLite storage with reference codes).
 
 > **Honesty notes.** VELTRIX is a demonstration brand. The four projects are **fictional concepts** (not client work), testimonials are **sample/fictional personas**, the results figures are **illustrative**, and the social links and email address are **placeholders**. All of this is labelled in the UI. The interactions, the API, the database and the live performance metrics are real.
 
@@ -38,17 +38,17 @@ npm start          # one Node process serves the site + API on http://localhost:
 
 ## What’s inside
 
-**Frontend** — React 19, TypeScript, [Motion](https://motion.dev) (`motion/react`), Lucide icons, self-hosted variable fonts (Unbounded, Geist, Geist Mono, Instrument Serif). No CSS framework; component-scoped CSS on a token system. No Three.js/GSAP — the hero is ~350 lines of raw WebGL.
+**Frontend** — React 19, TypeScript, [Motion](https://motion.dev) (`motion/react`), Lucide icons, self-hosted variable fonts (Unbounded, Geist, Geist Mono, Instrument Serif). No CSS framework; component-scoped CSS on a token system. No Three.js/GSAP — the hero’s infinite type loops run on the Web Animations API (compositor-driven transforms, no React re-renders).
 
 | Section | Highlights |
 | --- | --- |
 | Intro | ~1.3 s movie-title sequence, once per session, skippable (any key/click/scroll), skipped for reduced motion. |
 | Nav | Scroll-aware glass pill (transform-only, no layout shift), sliding hover/active indicators, char-roll links, auto-hide on scroll, full-screen mobile menu with circular wipe, focus trap, Esc. |
-| Hero | Ray-marched liquid-glass orb (pointer lean + light, click shockwave, scroll response, adaptive resolution, pauses off-screen, CSS fallback), particle field, staggered char reveal, magnetic CTAs, live render stats, coordinates, local clock. |
-| Marquee | Velocity-reactive dual tape, tilts with scroll, static under reduced motion. |
+| Hero | Headline-first composition: masked line-by-line reveal with a periodic sheen on “REIMAGINED.”, oversized background words drifting at three speeds/depths (pointer + scroll parallax), soft light sweeps and a cursor-following light, staggered copy and magnetic CTAs with a landing glint, and a full-bleed typographic conveyor (“Creative development · Interactive experiences · …”). Seamless −50% loops at a constant px/s that re-time without jumping on resize and pause off-screen; duplicates are `aria-hidden`; a round control on the conveyor pauses all looping motion site-wide (remembered). |
+| Marquee | Velocity-reactive dual tape that tilts with scroll; calmer under reduced motion (half speed, no tilt/skew) and frozen by the site-wide pause control. |
 | Work | Filter tabs with shared-layout indicator; 4 bespoke SVG/CSS concept visuals; full-screen case study that expands out of its card, deep-linkable (`?project=aurele`), back gesture closes it; swipeable lightbox with keyboard + thumbnails; click-to-copy palettes. |
 | Capabilities | Six working demos: layout presets that physically reflow · live ping of this site’s API (real latency + JSON) · pointer/ripple dot field · product variants + fly-to-bag cart with popover · palette generator with copy · **real** Core Web Vitals from `PerformanceObserver`. |
-| Lab | Five themes (registered `@property` colour transitions), glass/glow/grid/motion switches, radius slider, density + transition dropdowns, screen transitions, inspect mode with live measurements and a keyboard-accessible component picker, reset. |
+| Lab | Five themes (registered `@property` colour transitions), glass/glow/grid/motion switches, radius slider, density + transition dropdowns, screen transitions, inspect mode with live measurements and a keyboard-accessible component picker, reset. On tablets and phones the live preview stays pinned in a compact, scaled view so it fits on screen next to the controls. |
 | Process | Sticky rolling counter, scroll-drawn connecting line, active-step highlighting. |
 | Results | Illustrative metrics with count-ups and a template ↔ crafted comparison switch. |
 | Testimonials | Fictional, labelled; autoplay with progress (pauses on hover/focus/off-screen), swipe, tabs. |
@@ -56,7 +56,7 @@ npm start          # one Node process serves the site + API on http://localhost:
 | Contact | Shared client/server validation, chips, radio cards, custom listbox, honeypot, live service status, loading/success/error states. |
 | Footer | Spotlight wordmark, animated links, labelled social placeholders, return-to-top. |
 
-**Accessibility & motion** — semantic landmarks, skip link, visible focus, keyboard support for every control (tabs, listbox, accordion, switches, sliders, overlays), focus trapping + restoration, `inert` page behind overlays, live regions for status, `prefers-reduced-motion` honoured everywhere (no intro, static orb, no custom cursor, no parallax), no scroll hijacking, touch-friendly fallbacks for every hover effect.
+**Accessibility & motion** — semantic landmarks, skip link, visible focus, keyboard support for every control (tabs, listbox, accordion, switches, sliders, overlays), focus trapping + restoration, `inert` page behind overlays, live regions for status, `prefers-reduced-motion` means calmer, not frozen (no intro, no parallax or scroll-linked movement, no smooth scrolling, slower loops — entrances, ripples, hovers and other feedback keep working), plus an on-page pause control for all looping motion (WCAG 2.2.2), no scroll hijacking, touch-friendly fallbacks for every hover effect.
 
 ---
 
@@ -163,7 +163,7 @@ shared/inquiry.ts  validation + sanitisation shared by client and server
 src/
   components/ui    Button, TextReveal, Segmented, Select, Switch, Slider, Accordion, Modal, Tooltip, Toasts, Marquee…
   components/layout Navbar, MobileMenu, Cursor, Intro, ScrollProgress, BackToTop, Footer, SectionBoundary
-  features/hero    WebGL orb renderer, particle field, hero composition
+  features/hero    hero composition, drifting backdrop type, conveyor strip, seamless loop hook (useLoop)
   sections/        work · capabilities · lab · process · results · testimonials · faq · contact · marquee
   content/         all copy and data (projects, FAQ, metrics, socials…) — edit here
   hooks/, lib/     media queries, magnetic, tilt, overlays/focus trap, scroll-spy, vitals, stores

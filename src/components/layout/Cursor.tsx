@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useFinePointer, usePrefersReducedMotion } from '../../hooks/useMediaQuery';
+import { useFinePointer } from '../../hooks/useMediaQuery';
 import './Cursor.css';
 
 const INTERACTIVE = 'a, button, [role="button"], [role="tab"], [role="switch"], [role="radio"], [role="option"], [role="combobox"], label, summary, input[type="range"]';
@@ -115,10 +115,9 @@ function CursorImpl() {
   );
 }
 
-/** Desktop-only interpolated cursor with contextual states. Disabled for touch and reduced motion. */
+/** Desktop-only interpolated cursor with contextual states. Disabled for touch input. */
 export function Cursor() {
   const fine = useFinePointer();
-  const reduced = usePrefersReducedMotion();
-  if (!fine || reduced) return null;
+  if (!fine) return null;
   return <CursorImpl />;
 }

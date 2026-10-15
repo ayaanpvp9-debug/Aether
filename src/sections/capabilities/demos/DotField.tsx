@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { usePrefersReducedMotion } from '../../../hooks/useMediaQuery';
 
 interface Dot {
   ox: number;
@@ -14,7 +13,6 @@ interface Dot {
  */
 export function DotField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const reduced = usePrefersReducedMotion();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -109,7 +107,6 @@ export function DotField() {
     };
 
     const kick = () => {
-      if (reduced) return;
       if (!running) {
         running = true;
         raf = requestAnimationFrame(loop);
@@ -162,7 +159,7 @@ export function DotField() {
       canvas.removeEventListener('pointerup', onUp);
       canvas.removeEventListener('pointercancel', onLeave);
     };
-  }, [reduced]);
+  }, []);
 
   return (
     <div className="vx-dots">
