@@ -2,6 +2,17 @@ import path from 'node:path';
 
 export type StoreDriver = 'auto' | 'sqlite' | 'file';
 
+/** How the client IP used for rate limiting is derived (see `getClientIp`). */
+export interface ClientIpConfig {
+  /**
+   * Header set by the hosting edge that always overwrites any client-sent value
+   * (e.g. `true-client-ip` on Render). Lower-case; null to disable.
+   */
+  header: string | null;
+  /** Number of trusted reverse proxies that append to X-Forwarded-For (0 = ignore the header). */
+  trustedProxies: number;
+}
+
 export interface ServerConfig {
   port: number;
   host: string;
@@ -9,7 +20,7 @@ export interface ServerConfig {
   storeDriver: StoreDriver;
   /** Enables the admin listing endpoint when set (≥ 24 chars). */
   adminToken: string | null;
-  trustProxy: boolean;
+  clientIp: ClientIpConfig;
   allowedOrigins: string[];
   rateLimit: { max: number; windowMs: number };
   /** Maximum accepted request body in bytes. */
@@ -34,6 +45,25 @@ function toInt(value: string | undefined, fallback: number, min: number, max: nu
   return Math.min(max, Math.max(min, parsed));
 }
 
+/** TRUST_PROXY: unset/false → 0, true/yes → 1, or an explicit hop count (1–10). */
+function parseTrustedProxies(value: string | undefined, logger: Logger): number {
+  const raw = (value ?? '').trim().toLowerCase();
+  if (raw === '' || raw === 'false' || raw === 'no' || raw === '0') return 0;
+  if (raw === 'true' || raw === 'yes') return 1;
+  const hops = Number(raw);
+  if (Number.isInteger(hops) && hops >= 1 && hops <= 10) return hops;
+  logger.warn(`Ignoring TRUST_PROXY="${value}" — use false, true or a proxy count between 1 and 10.`);
+  return 0;
+}
+
+function parseClientIpHeader(value: string | undefined, logger: Logger): string | null {
+  const raw = (value ?? '').trim().toLowerCase();
+  if (raw === '') return null;
+  if (/^[a-z0-9-]{1,64}$/.test(raw)) return raw;
+  logger.warn(`Ignoring CLIENT_IP_HEADER="${value}" — expected a header name such as true-client-ip.`);
+  return null;
+}
+
 export function loadConfig(env: NodeJS.ProcessEnv = process.env, logger: Logger = consoleLogger): ServerConfig {
   const driver = (env.INQUIRY_STORE ?? 'auto').trim().toLowerCase();
   const storeDriver: StoreDriver = driver === 'sqlite' || driver === 'file' ? driver : 'auto';
@@ -50,7 +80,10 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env, logger: Logger 
     dataDir: path.resolve(env.DATA_DIR?.trim() || 'data'),
     storeDriver,
     adminToken,
-    trustProxy: /^(1|true|yes)$/i.test(env.TRUST_PROXY ?? ''),
+    clientIp: {
+      header: parseClientIpHeader(env.CLIENT_IP_HEADER, logger),
+      trustedProxies: parseTrustedProxies(env.TRUST_PROXY, logger),
+    },
     allowedOrigins: (env.ALLOWED_ORIGINS ?? '')
       .split(',')
       .map((o) => o.trim().replace(/\/$/, ''))

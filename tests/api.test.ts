@@ -9,7 +9,7 @@ import { createRateLimiter, type RateLimiter } from '../server/rate-limit.ts';
 import { createInquiryStore } from '../server/store/index.ts';
 import { createMemoryStore } from '../server/store/memory.ts';
 import type { InquiryStore } from '../server/store/types.ts';
-import type { Logger } from '../server/config.ts';
+import type { ClientIpConfig, Logger } from '../server/config.ts';
 
 const silent: Logger = { info: () => {}, warn: () => {}, error: () => {} };
 const ADMIN_TOKEN = 'test-admin-token-0123456789abcdef';
@@ -31,14 +31,22 @@ interface Harness {
   close(): Promise<void>;
 }
 
-async function startHarness(options: { store?: InquiryStore; max?: number; adminToken?: string | null } = {}): Promise<Harness> {
+async function startHarness(
+  options: { store?: InquiryStore; max?: number; adminToken?: string | null; clientIp?: ClientIpConfig; ephemeralStorage?: boolean } = {},
+): Promise<Harness> {
   const store = options.store ?? createMemoryStore();
   const limiter = createRateLimiter({ max: options.max ?? 50, windowMs: 60_000 });
   const handle = createApiHandler({
     store,
     limiter,
     logger: silent,
-    config: { adminToken: options.adminToken ?? null, trustProxy: false, allowedOrigins: [], bodyLimit: 16 * 1024 },
+    ephemeralStorage: options.ephemeralStorage,
+    config: {
+      adminToken: options.adminToken ?? null,
+      clientIp: options.clientIp ?? { header: null, trustedProxies: 0 },
+      allowedOrigins: [],
+      bodyLimit: 16 * 1024,
+    },
   });
   const server = http.createServer((req, res) => {
     handle(req, res).then((handled) => {
@@ -62,6 +70,8 @@ async function startHarness(options: { store?: InquiryStore; max?: number; admin
 interface ApiBody {
   ok?: boolean;
   status?: string;
+  storage?: string;
+  persistent?: boolean;
   error?: string;
   reference?: string;
   fields?: Record<string, string>;
@@ -188,6 +198,60 @@ describe('API hardening', () => {
     const res = await postJson(h.url, validInquiry);
     expect(res.status).toBe(503);
     expect((await json(res)).error).toBe('storage_unavailable');
+    await h.close();
+  });
+});
+
+describe('hosting behaviour (Render)', () => {
+  it('fails the health check (503) when the store cannot answer a query', async () => {
+    const broken: InquiryStore = {
+      ...createMemoryStore(),
+      count: async () => {
+        throw new Error('disk detached');
+      },
+    };
+    const h = await startHarness({ store: broken });
+    const res = await fetch(`${h.url}/api/health`);
+    expect(res.status).toBe(503);
+    expect(await json(res)).toMatchObject({ ok: false, status: 'unavailable' });
+    await h.close();
+  });
+
+  it('labels storage as temporary on an ephemeral filesystem — in health and in the success reply', async () => {
+    const dir = await mkdtemp(path.join(os.tmpdir(), 'veltrix-ephemeral-'));
+    const store = await createInquiryStore({ driver: 'file', dataDir: dir, logger: silent });
+
+    const durable = await startHarness({ store });
+    expect(await json(await fetch(`${durable.url}/api/health`))).toMatchObject({ storage: 'JSON Lines file', persistent: true });
+    await durable.close();
+
+    const temporary = await startHarness({ store, ephemeralStorage: true });
+    expect(await json(await fetch(`${temporary.url}/api/health`))).toMatchObject({ storage: 'temporary JSON Lines file', persistent: false });
+    const created = await postJson(temporary.url, validInquiry);
+    expect(created.status).toBe(201);
+    expect((await json(created)).storage).toBe('temporary JSON Lines file');
+    await temporary.close();
+
+    await store.close();
+    await rm(dir, { recursive: true, force: true });
+  });
+
+  it('rate limits per visitor using the edge client-IP header (true-client-ip)', async () => {
+    const h = await startHarness({ max: 1, clientIp: { header: 'true-client-ip', trustedProxies: 0 } });
+    const from = (ip: string) => postJson(h.url, validInquiry, { 'True-Client-IP': ip });
+    expect((await from('203.0.113.10')).status).toBe(201);
+    expect((await from('203.0.113.10')).status).toBe(429);
+    // A different visitor behind the same proxy is not blocked by someone else's quota.
+    expect((await from('203.0.113.11')).status).toBe(201);
+    await h.close();
+  });
+
+  it('ignores spoofed leftmost X-Forwarded-For entries when trusting proxies', async () => {
+    const h = await startHarness({ max: 1, clientIp: { header: null, trustedProxies: 1 } });
+    const via = (xff: string) => postJson(h.url, validInquiry, { 'X-Forwarded-For': xff });
+    expect((await via('198.51.100.1, 203.0.113.50')).status).toBe(201);
+    // Changing the client-controlled (left) part must not mint a fresh rate-limit bucket.
+    expect((await via('198.51.100.2, 203.0.113.50')).status).toBe(429);
     await h.close();
   });
 });

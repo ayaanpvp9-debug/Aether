@@ -66,7 +66,7 @@ All server code lives in `server/` and has **no runtime dependencies**. The same
 
 | Method & path | Behaviour |
 | --- | --- |
-| `GET /api/health` | `200 { ok, status, storage, time }` |
+| `GET /api/health` | `200 { ok, status, storage, persistent, time }` after a real storage query · `503` if the store doesn't answer (used as Render's health check) |
 | `POST /api/inquiries` | `201 { ok, reference: "VX-XXXXXX", receivedAt, storage }` on success |
 | | `422` field errors · `400` malformed JSON / honeypot · `413` > 16 KB · `415` non-JSON · `403` cross-site · `429` + `Retry-After` · `503` storage failure (nothing stored) |
 | `GET /api/inquiries?limit=50` | Admin listing, `Authorization: Bearer $ADMIN_TOKEN` (timing-safe compare). **Disabled (404) unless `ADMIN_TOKEN` is set.** |
@@ -84,13 +84,15 @@ Copy `.env.example` to `.env` (never commit it). Everything is optional.
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `PORT` / `HOST` | `3000` / `0.0.0.0` | Production server address. |
-| `DATA_DIR` | `./data` | Where inquiries are stored. Use a persistent volume in production. |
+| `PORT` / `HOST` | `3000` / `0.0.0.0` | Production server address. Render injects `PORT` (10000) automatically. |
+| `DATA_DIR` | `./data` | Where inquiries are stored. Must be a persistent disk in production (see [SQLite persistence](#sqlite-persistence-on-render)). |
 | `INQUIRY_STORE` | `auto` | `auto` (SQLite → file fallback), `sqlite`, or `file`. |
 | `ADMIN_TOKEN` | — | Enables the admin listing endpoint (≥ 24 chars). |
 | `RATE_LIMIT_MAX` / `RATE_LIMIT_WINDOW_MS` | `8` / `900000` | Submissions per IP per window. |
-| `TRUST_PROXY` | `false` | Use `X-Forwarded-For` behind a trusted reverse proxy. |
+| `CLIENT_IP_HEADER` | — | Header the hosting edge always overwrites with the visitor IP (Render: `true-client-ip`). |
+| `TRUST_PROXY` | `false` | Number of trusted proxies (`true` = 1). `X-Forwarded-For` is read from the right, never the spoofable left. |
 | `ALLOWED_ORIGINS` | — | Comma-separated origins allowed to POST (empty = same-origin browsers only). |
+| `SITE_URL` | — | Build time: public origin for absolute `og:image`/`og:url`/canonical. Falls back to Render's `RENDER_EXTERNAL_URL`. |
 | `DEV_ALLOWED_HOSTS` | — | Extra hostnames allowed by the Vite dev server. |
 
 No secrets are ever exposed to the client: only `VITE_*` variables reach browser code, and none are used.
@@ -99,7 +101,50 @@ No secrets are ever exposed to the client: only `VITE_*` variables reach browser
 
 ## Deployment
 
-**Recommended: any Node host** (a VPS, Render, Railway, Fly.io, a container…): `npm ci && npm run build && npm start`, with `DATA_DIR` on a persistent disk. That gives you the complete experience, including stored inquiries.
+**Recommended: any Node host** (Render — see below — a VPS, Railway, Fly.io, a container…): `npm ci --include=dev && npm run build`, then `npm start`, with `DATA_DIR` on a persistent disk. One process serves the site and the API on `$PORT`, bound to `0.0.0.0`. That gives you the complete experience, including stored inquiries.
+
+### Deploying to Render
+
+The repo ships a [Blueprint](https://render.com/docs/infrastructure-as-code) (`render.yaml`) and pins Node 22 via `.node-version`.
+
+| Setting | Value |
+| --- | --- |
+| Service | One **web service** (`runtime: node`), plan `free`, region `singapore` (closest to India; can't be changed later) |
+| Build command | `npm ci --include=dev && npm run build` (typecheck → `dist/` → `dist-server/`) |
+| Start command | `node dist-server/index.js` (same as `npm start`) — listens on Render's `PORT` at `0.0.0.0` |
+| Health check | `/api/health` — 200 only if the server is up and the store answers a query |
+| Auto-deploy | Every push to the linked branch |
+
+1. Push this repo to GitHub (already done if you're reading this on GitHub).
+2. In the [Render Dashboard](https://dashboard.render.com/) choose **New → Blueprint**, connect the GitHub repo, and pick the **branch** to deploy. Leave **Blueprint Path** as `render.yaml`.
+3. Review the plan (one free web service called `veltrix`) and click **Deploy Blueprint**.
+4. When the deploy log shows the health check passing and the service shows **Live**, your public URL is at the top of the service page: `https://veltrix.onrender.com` or, if that name is taken, a variant with a suffix.
+
+Environment variables set by the Blueprint: `CLIENT_IP_HEADER=true-client-ip` (per-visitor rate limiting behind Render's proxy) and `ADMIN_TOKEN` (a random value Render generates; find it under **Environment**). Render itself provides `PORT`, `NODE_ENV=production` and `RENDER_EXTERNAL_URL`, which is used for absolute social-preview URLs. Nothing else is required. Set `SITE_URL` if you add a custom domain. Never commit secrets: put them in the Render Dashboard.
+
+**Reading submissions.** Free instances have no shell, so use the admin endpoint:
+
+```bash
+curl -H "Authorization: Bearer $ADMIN_TOKEN" "https://<your-service>.onrender.com/api/inquiries?limit=50"
+```
+
+#### SQLite persistence on Render
+
+Render's filesystem is **ephemeral**. Anything written outside a persistent disk — including `data/veltrix.db` — is lost on every redeploy and restart. On the free plan it's also lost on every idle spin-down, which happens after 15 minutes without traffic. The first request after a spin-down takes about a minute.
+
+| | Free (default `render.yaml`) | Persistent |
+| --- | --- | --- |
+| Cost (render.com/pricing) | $0 | `0.5c-512mb` instance $7/mo + disk $0.25/GB/mo |
+| Site + API | Yes | Yes |
+| Stored inquiries survive deploys/restarts | **No** — the server logs a warning, and the UI says *"temporary SQLite database"* | **Yes** — SQLite on a disk at `/var/data`, daily snapshots |
+| Trade-offs | Sleeps when idle | Single instance only; a few seconds of downtime per deploy (no zero-downtime deploys with a disk) |
+
+To switch to persistent storage, edit `render.yaml`:
+1. Set `plan: 0.5c-512mb`.
+2. Uncomment the `DATA_DIR=/var/data` env var and the `disk` block (remove the leading `# `).
+3. Push. The server detects the disk at startup, logs "Inquiry storage is on a persistent disk", and drops the "temporary" label.
+
+The disk is only available at runtime, not during the build, so nothing touches the database before the server starts. Don't set `DATA_DIR=/var/data` without the disk: it would just be another ephemeral folder.
 
 **Static hosting (GitHub Pages, static Netlify/Vercel, S3…)**: the `dist/` folder works on its own, but there is **no API**. The site detects this and stays honest — the contact section shows “Inquiry service unreachable”, the form warns before sending and, on submit, says *“Nothing was sent”* with **Copy brief** and **Retry** actions; the API card reports the API as unreachable. To get persistent submissions on a static host, pick one:
 

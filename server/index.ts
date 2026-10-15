@@ -72,9 +72,17 @@ const server = http.createServer((req, res) => {
 
 server.requestTimeout = 15_000;
 server.headersTimeout = 10_000;
+// Keep idle keep-alive sockets open longer than the platform load balancer does: Node's 5 s
+// default makes the proxy reuse sockets we just closed → sporadic 502s / connection resets
+// (see Render's troubleshooting guide). On Node ≥ 18 the header/request timeouts above only
+// apply while a request is in flight, so they don't cut idle connections short.
+server.keepAliveTimeout = 65_000;
 
 server.listen(api.config.port, api.config.host, () => {
-  logger.info(`VELTRIX is live → http://localhost:${api.config.port}`);
+  const host = api.config.host.includes(':') ? `[${api.config.host}]` : api.config.host;
+  logger.info(`Listening on http://${host}:${api.config.port}`);
+  const publicUrl = process.env.RENDER_EXTERNAL_URL?.trim();
+  if (publicUrl) logger.info(`Render service URL: ${publicUrl}`);
 });
 
 let shuttingDown = false;

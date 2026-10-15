@@ -58,6 +58,40 @@ function preloadCriticalFonts(patterns: RegExp[]): Plugin {
   };
 }
 
+/** SITE_URL (custom domain) wins; Render provides RENDER_EXTERNAL_URL during builds. */
+function resolvePublicOrigin(env: Record<string, string>): string | null {
+  const raw = (env.SITE_URL || env.RENDER_EXTERNAL_URL || '').trim();
+  if (!raw) return null;
+  try {
+    const url = new URL(raw);
+    return url.protocol === 'https:' || url.protocol === 'http:' ? url.origin : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Link-preview crawlers (WhatsApp, LinkedIn, X, Slack…) need absolute URLs. When the public
+ * origin is known at build time, make og:image absolute and add og:url + a canonical link.
+ * Without a known origin the HTML is left untouched.
+ */
+function absoluteSocialUrls(origin: string | null): Plugin {
+  return {
+    name: 'veltrix-social-urls',
+    apply: 'build',
+    transformIndexHtml(html) {
+      if (!origin) return html;
+      return {
+        html: html.replace(/(<meta\s+property="og:image"\s+content=")\/(?!\/)/, `$1${origin}/`),
+        tags: [
+          { tag: 'meta', attrs: { property: 'og:url', content: `${origin}/` }, injectTo: 'head' },
+          { tag: 'link', attrs: { rel: 'canonical', href: `${origin}/` }, injectTo: 'head' },
+        ],
+      };
+    },
+  };
+}
+
 export default defineConfig(({ mode, isSsrBuild }) => {
   // Load every variable from .env files (not only VITE_*) for the server-side API.
   // Nothing here is exposed to client code: only VITE_* vars reach import.meta.env.
@@ -68,6 +102,7 @@ export default defineConfig(({ mode, isSsrBuild }) => {
       react(),
       veltrixApi(env),
       preloadCriticalFonts([/unbounded-latin-wght-normal-[\w-]+\.woff2$/, /geist-latin-wght-normal-[\w-]+\.woff2$/]),
+      absoluteSocialUrls(resolvePublicOrigin(env)),
     ],
     // The server bundle must not receive a copy of public/.
     publicDir: isSsrBuild ? false : 'public',

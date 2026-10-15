@@ -9,8 +9,10 @@ import { DuplicateReferenceError, type InquiryRecord, type InquiryStore } from '
 export interface ApiDeps {
   store: InquiryStore;
   limiter: RateLimiter;
-  config: Pick<ServerConfig, 'adminToken' | 'trustProxy' | 'allowedOrigins' | 'bodyLimit'>;
+  config: Pick<ServerConfig, 'adminToken' | 'clientIp' | 'allowedOrigins' | 'bodyLimit'>;
   logger: Logger;
+  /** True when stored data will not survive a restart (e.g. Render without a disk). Labelled honestly. */
+  ephemeralStorage?: boolean;
   now?: () => Date;
 }
 
@@ -67,9 +69,31 @@ function formatWait(seconds: number): string {
   return `${minutes} minute${minutes === 1 ? '' : 's'}`;
 }
 
-export function createApiHandler({ store, limiter, config, logger, now = () => new Date() }: ApiDeps): ApiHandler {
+export function createApiHandler({ store, limiter, config, logger, ephemeralStorage = false, now = () => new Date() }: ApiDeps): ApiHandler {
   const methodNotAllowed = (res: ServerResponse, allow: string) =>
     sendJson(res, 405, { ok: false, error: 'method_not_allowed', message: `Use ${allow}.` } satisfies GenericError, { Allow: allow });
+
+  // Shown in the UI ("stored in a temporary SQLite database"), so it must not over-promise.
+  const persistent = !ephemeralStorage && store.driver !== 'memory';
+  const storageLabel = `${ephemeralStorage && store.driver !== 'memory' ? 'temporary ' : ''}${STORAGE_LABEL[store.driver]}`;
+
+  async function health(res: ServerResponse): Promise<void> {
+    try {
+      // A real query, so platform health checks (Render's healthCheckPath) catch a broken store.
+      await store.count();
+    } catch (error) {
+      logger.error(`Health check failed — storage unavailable: ${(error as Error).message}`);
+      return sendJson(res, 503, {
+        ok: false,
+        status: 'unavailable',
+        storage: storageLabel,
+        persistent,
+        message: 'The inquiry store is not responding.',
+        time: now().toISOString(),
+      });
+    }
+    return sendJson(res, 200, { ok: true, status: 'ready', storage: storageLabel, persistent, time: now().toISOString() });
+  }
 
   async function submitInquiry(req: IncomingMessage, res: ServerResponse): Promise<void> {
     const reply = (status: number, body: InquiryResponse, headers?: Record<string, string>) => sendJson(res, status, body, headers);
@@ -84,7 +108,7 @@ export function createApiHandler({ store, limiter, config, logger, now = () => n
       return reply(415, { ok: false, error: 'unsupported_media_type', message: 'Send the inquiry as application/json.' });
     }
 
-    const limit = limiter.hit(getClientIp(req, config.trustProxy));
+    const limit = limiter.hit(getClientIp(req, config.clientIp));
     if (!limit.allowed) {
       req.resume();
       return reply(
@@ -132,7 +156,7 @@ export function createApiHandler({ store, limiter, config, logger, now = () => n
     }
 
     logger.info(`Inquiry ${record.reference} stored (${store.driver}).`);
-    return reply(201, { ok: true, reference: record.reference, receivedAt: record.createdAt, storage: STORAGE_LABEL[store.driver] });
+    return reply(201, { ok: true, reference: record.reference, receivedAt: record.createdAt, storage: storageLabel });
   }
 
   async function listInquiries(req: IncomingMessage, res: ServerResponse, url: URL): Promise<void> {
@@ -162,7 +186,7 @@ export function createApiHandler({ store, limiter, config, logger, now = () => n
     try {
       if (pathname === '/api/health') {
         if (method !== 'GET' && method !== 'HEAD') methodNotAllowed(res, 'GET, HEAD');
-        else sendJson(res, 200, { ok: true, status: 'ready', storage: STORAGE_LABEL[store.driver], time: now().toISOString() });
+        else await health(res);
       } else if (pathname === '/api/inquiries') {
         if (method === 'POST') await submitInquiry(req, res);
         else if (method === 'GET') await listInquiries(req, res, url);

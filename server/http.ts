@@ -1,4 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import { isIP } from 'node:net';
+import type { ClientIpConfig } from './config.ts';
 
 export class HttpError extends Error {
   readonly status: number;
@@ -56,11 +58,30 @@ export async function readJsonBody(req: IncomingMessage, limit: number): Promise
   }
 }
 
-export function getClientIp(req: IncomingMessage, trustProxy: boolean): string {
-  if (trustProxy) {
-    const forwarded = req.headers['x-forwarded-for'];
-    const first = (Array.isArray(forwarded) ? forwarded[0] : forwarded)?.split(',')[0]?.trim();
-    if (first) return first;
+/**
+ * Resolves the client IP used as the rate-limit key.
+ *
+ * 1. `header` — a header the hosting edge always overwrites (Render: `true-client-ip`).
+ * 2. `trustedProxies` — X-Forwarded-For read from the RIGHT: each trusted proxy appends the
+ *    address it received the request from, so everything further left is client-controlled
+ *    and must never be trusted (a leftmost-entry lookup is trivially spoofable).
+ * 3. Otherwise the TCP peer address.
+ */
+export function getClientIp(req: IncomingMessage, options: ClientIpConfig): string {
+  if (options.header) {
+    const raw = req.headers[options.header];
+    const value = (Array.isArray(raw) ? raw[raw.length - 1] : raw)?.trim();
+    if (value && isIP(value)) return value;
+  }
+  if (options.trustedProxies > 0) {
+    const raw = req.headers['x-forwarded-for'];
+    // Node joins repeated X-Forwarded-For headers with ", " in arrival order.
+    const hops = (Array.isArray(raw) ? raw.join(',') : (raw ?? ''))
+      .split(',')
+      .map((entry) => entry.trim())
+      .filter(Boolean);
+    const candidate = hops[hops.length - options.trustedProxies];
+    if (candidate && isIP(candidate)) return candidate;
   }
   return req.socket.remoteAddress ?? 'unknown';
 }
