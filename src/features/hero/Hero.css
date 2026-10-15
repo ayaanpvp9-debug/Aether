@@ -1,0 +1,661 @@
+.vx-hero {
+  --px: 0;
+  --py: 0;
+  position: relative;
+  display: flex;
+  min-height: max(100svh, 680px);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* ───────── Atmosphere ───────── */
+
+.vx-hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.vx-hero__aurora {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+.vx-hero__aurora--a {
+  width: 70vmax;
+  height: 70vmax;
+  left: -24vmax;
+  top: -34vmax;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.42) 0%, rgba(139, 92, 246, 0.12) 38%, transparent 66%);
+  animation: vx-drift-a 26s ease-in-out infinite alternate;
+}
+
+.vx-hero__aurora--b {
+  width: 60vmax;
+  height: 60vmax;
+  right: -26vmax;
+  top: 4vmax;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.26) 0%, rgba(56, 189, 248, 0.07) 40%, transparent 66%);
+  animation: vx-drift-b 30s ease-in-out infinite alternate;
+}
+
+.vx-hero__aurora--c {
+  width: 40vmax;
+  height: 40vmax;
+  left: 22vw;
+  bottom: -30vmax;
+  background: radial-gradient(circle, rgba(232, 121, 249, 0.16) 0%, transparent 64%);
+  animation: vx-drift-a 34s ease-in-out infinite alternate-reverse;
+}
+
+.vx-hero__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(245, 245, 247, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 245, 247, 0.04) 1px, transparent 1px);
+  background-size: 80px 80px;
+  background-position: center center;
+  -webkit-mask-image: radial-gradient(ellipse 65% 55% at 50% 48%, #000 15%, transparent 72%);
+  mask-image: radial-gradient(ellipse 65% 55% at 50% 48%, #000 15%, transparent 72%);
+}
+
+.vx-hero__particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.vx-hero__vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 90% 75% at 50% 42%, transparent 45%, rgba(7, 7, 10, 0.8) 100%),
+    linear-gradient(to bottom, transparent 72%, var(--bg) 100%);
+}
+
+/* ───────── Layout ───────── */
+
+.vx-hero__stage {
+  position: relative;
+  display: flex;
+  flex: 1;
+}
+
+.vx-hero__inner {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: clamp(16px, 2vw, 28px);
+  padding-top: calc(80px + clamp(16px, 2.6vw, 36px));
+  padding-bottom: clamp(26px, 3.4vw, 46px);
+}
+
+.vx-hero__topline {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px 24px;
+}
+
+.vx-hero__topline > * {
+  white-space: nowrap;
+}
+
+.vx-hero__clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.vx-hero__clock-label {
+  color: var(--text-3);
+}
+
+.vx-hero__live {
+  position: relative;
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6);
+  animation: vx-live 2.4s ease-out infinite;
+}
+
+/* ───────── Centerpiece ───────── */
+
+.vx-hero__center {
+  position: relative;
+  display: grid;
+  align-content: center;
+  min-height: 0;
+}
+
+.vx-hero__orb {
+  position: absolute;
+  z-index: 2;
+  left: 54%;
+  top: 50%;
+  width: min(76vh, 54vw, 800px);
+  aspect-ratio: 1;
+  translate: -50% -50%;
+  touch-action: manipulation;
+}
+
+.vx-hero__orb-glow {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.28) 0%, rgba(56, 189, 248, 0.1) 42%, transparent 68%);
+  transform: translate3d(calc(var(--px) * 18px), calc(var(--py) * -14px), 0);
+  transition: transform 1.2s var(--ease-out);
+}
+
+.vx-orb-canvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.vx-hero__ring {
+  position: absolute;
+  inset: 4%;
+  width: 92%;
+  height: 92%;
+  overflow: visible;
+  animation: vx-rotate 90s linear infinite;
+  opacity: 0.7;
+}
+
+.vx-hero__ring-line {
+  fill: none;
+  stroke: rgba(245, 245, 247, 0.07);
+  stroke-width: 1;
+}
+
+.vx-hero__tick {
+  stroke: rgba(245, 245, 247, 0.16);
+  stroke-width: 1;
+}
+
+.vx-hero__tick--long {
+  stroke: rgba(245, 245, 247, 0.38);
+}
+
+.vx-hero__coords {
+  position: absolute;
+  top: 13%;
+  right: -2%;
+  display: grid;
+  gap: 4px;
+  padding-left: 14px;
+  border-left: 1px solid var(--line-3);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  color: var(--text-3);
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.vx-hero__coords-label {
+  color: var(--text);
+}
+
+.vx-hero__coords-value {
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* CSS orb used when WebGL is unavailable */
+.vx-orb-fallback {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform: translate3d(calc(var(--px) * 14px), calc(var(--py) * -10px), 0);
+  transition: transform 1s var(--ease-out);
+}
+
+.vx-orb-fallback__core,
+.vx-orb-fallback__ring,
+.vx-orb-fallback__shine {
+  position: absolute;
+  inset: 17%;
+  border-radius: 50%;
+}
+
+.vx-orb-fallback__core {
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.55) 0%, transparent 18%),
+    radial-gradient(circle at 70% 75%, rgba(56, 189, 248, 0.6) 0%, transparent 40%),
+    radial-gradient(circle at 30% 70%, rgba(232, 121, 249, 0.45) 0%, transparent 42%),
+    radial-gradient(circle at 50% 50%, #2a1a5e 0%, #0b0a18 70%);
+  box-shadow:
+    inset -30px -40px 80px rgba(0, 0, 0, 0.7),
+    inset 20px 20px 60px rgba(139, 92, 246, 0.35),
+    0 0 120px rgba(139, 92, 246, 0.25);
+}
+
+.vx-orb-fallback__ring {
+  background: conic-gradient(from var(--vx-angle), transparent 0deg, rgba(139, 92, 246, 0.55) 70deg, transparent 140deg, rgba(56, 189, 248, 0.5) 220deg, transparent 300deg);
+  -webkit-mask: radial-gradient(circle, transparent 66%, #000 67%, #000 70%, transparent 71%);
+  mask: radial-gradient(circle, transparent 66%, #000 67%, #000 70%, transparent 71%);
+  animation: vx-angle 8s linear infinite;
+}
+
+.vx-orb-fallback__shine {
+  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.18), transparent 40%);
+  mix-blend-mode: screen;
+}
+
+/* ───────── Headline ───────── */
+
+.vx-hero__title {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  gap: 0.02em;
+  font-family: var(--font-display);
+  /* "REIMAGINED." ≈ 7.77 × font-size wide → this cap always fits the 1480px container. */
+  font-size: clamp(2.6rem, 10.6vw, 10.6rem);
+  font-weight: 600;
+  line-height: 0.86;
+  letter-spacing: -0.052em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.vx-hero__line {
+  display: flex;
+  white-space: nowrap;
+}
+
+/* Hidden (not just transparent) until the display face is ready, so the font swap can't register as a layout shift. */
+.vx-hero__title[data-fonts='pending'] .vx-hero__line {
+  visibility: hidden;
+}
+
+.vx-hero__line--1 {
+  justify-self: start;
+}
+
+.vx-hero__line--2 {
+  justify-self: end;
+}
+
+/* Luminous vertical gradient per glyph — lets the orb glow through the base of the letters. */
+.vx-hero__line--2 .vx-reveal__glyph {
+  background: linear-gradient(180deg, #f5f5f7 8%, #d9cffd 46%, rgba(139, 92, 246, 0.5) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.vx-hero__annotation {
+  position: relative;
+  z-index: 3;
+  justify-self: start;
+  max-width: 22ch;
+  margin-top: clamp(14px, 1.6vw, 22px);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-3);
+}
+
+.vx-hero__annotation .vx-serif {
+  color: var(--text);
+  font-size: 1.35em;
+}
+
+/* ───────── Bottom row ───────── */
+
+.vx-hero__bottom {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: end;
+  gap: 32px;
+}
+
+.vx-hero__copy {
+  display: grid;
+  gap: 26px;
+  max-width: 460px;
+}
+
+.vx-hero__lede {
+  font-size: clamp(15px, 1.12vw, 17px);
+  line-height: 1.6;
+  color: var(--text-2);
+  text-wrap: pretty;
+}
+
+.vx-hero__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.vx-hero__scroll {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  transition: color 0.3s;
+}
+
+.vx-hero__scroll:hover {
+  color: var(--text);
+}
+
+.vx-hero__scroll-track {
+  position: relative;
+  width: 26px;
+  height: 44px;
+  border: 1px solid var(--line-3);
+  border-radius: 999px;
+  transition: border-color 0.3s;
+}
+
+.vx-hero__scroll:hover .vx-hero__scroll-track {
+  border-color: var(--text-2);
+}
+
+.vx-hero__scroll-dot {
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  width: 4px;
+  height: 9px;
+  margin-left: -2px;
+  border-radius: 4px;
+  background: var(--text);
+  animation: vx-scroll-dot 2s var(--ease-in-out) infinite;
+}
+
+.vx-hero__panel {
+  justify-self: end;
+  display: grid;
+  gap: 12px;
+  width: 268px;
+  padding: 16px 18px 14px;
+  border-radius: 18px;
+  border: 1px solid var(--line-2);
+  background: rgba(16, 17, 22, 0.46);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  transform: translate3d(calc(var(--px) * -10px), calc(var(--py) * 8px), 0);
+  transition: transform 1.2s var(--ease-out);
+}
+
+.vx-hero__panel-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 10.5px;
+}
+
+.vx-hero__panel-rows {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+}
+
+.vx-hero__panel-rows div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 7px;
+  border-bottom: 1px dashed var(--line);
+}
+
+.vx-hero__panel-rows dt {
+  color: var(--text-3);
+}
+
+.vx-hero__panel-rows dd {
+  margin: 0;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.vx-hero__panel-hint {
+  color: var(--text-3);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ───────── Micro-details ───────── */
+
+.vx-hero__mark {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.vx-hero__mark::before,
+.vx-hero__mark::after {
+  content: '';
+  position: absolute;
+  background: var(--text-3);
+}
+
+.vx-hero__mark::before {
+  left: 5px;
+  top: 0;
+  width: 1px;
+  height: 11px;
+}
+
+.vx-hero__mark::after {
+  top: 5px;
+  left: 0;
+  height: 1px;
+  width: 11px;
+}
+
+.vx-hero__mark--tl {
+  top: 92px;
+  left: calc(var(--gutter) - 22px);
+}
+
+.vx-hero__mark--tr {
+  top: 92px;
+  right: calc(var(--gutter) - 22px);
+}
+
+.vx-hero__mark--bl {
+  bottom: 14px;
+  left: calc(var(--gutter) - 22px);
+}
+
+.vx-hero__mark--br {
+  bottom: 14px;
+  right: calc(var(--gutter) - 22px);
+}
+
+.vx-hero__side {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  z-index: 3;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  white-space: nowrap;
+  transform: translateY(-50%) rotate(-90deg) translateX(0);
+  transform-origin: left center;
+  translate: 0 0;
+  writing-mode: horizontal-tb;
+  opacity: 0.7;
+}
+
+/* ───────── Responsive ───────── */
+
+@media (max-width: 1279px) {
+  .vx-hero__side {
+    display: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  .vx-hero__bottom {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .vx-hero__panel {
+    display: none;
+  }
+
+  .vx-hero__orb {
+    width: min(70vh, 78vw, 640px);
+    left: 50%;
+  }
+
+  .vx-hero__topline-mid {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .vx-hero {
+    min-height: max(100svh, 640px);
+  }
+
+  .vx-hero__inner {
+    padding-top: calc(64px + 18px);
+    gap: 18px;
+  }
+
+  .vx-hero__center {
+    align-content: end;
+    padding-bottom: 8px;
+  }
+
+  .vx-hero__orb {
+    width: min(96vw, 52vh, 460px);
+    top: 44%;
+  }
+
+  .vx-hero__coords,
+  .vx-hero__annotation,
+  .vx-hero__mark {
+    display: none;
+  }
+
+  .vx-hero__title {
+    font-size: clamp(2.1rem, 11vw, 4.4rem);
+  }
+
+  .vx-hero__bottom {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .vx-hero__scroll {
+    display: none;
+  }
+
+  .vx-hero__ctas > * {
+    flex: 1 1 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .vx-hero__clock-label {
+    display: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .vx-hero__clock .vx-muted {
+    display: none;
+  }
+
+  .vx-hero__topline .vx-eyebrow {
+    letter-spacing: 0.1em;
+  }
+}
+
+/* ───────── Keyframes ───────── */
+
+@keyframes vx-drift-a {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(6vmax, 4vmax, 0) scale(1.08);
+  }
+}
+
+@keyframes vx-drift-b {
+  from {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  to {
+    transform: translate3d(-5vmax, 6vmax, 0) scale(0.95);
+  }
+}
+
+@keyframes vx-angle {
+  to {
+    --vx-angle: 360deg;
+  }
+}
+
+@keyframes vx-live {
+  0% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.55);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 7px rgba(74, 222, 128, 0);
+  }
+}
+
+@keyframes vx-scroll-dot {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  75% {
+    transform: translateY(17px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(17px);
+    opacity: 0;
+  }
+}

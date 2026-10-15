@@ -1,0 +1,223 @@
+.vx-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  /* Outer padding + bar padding = page gutter, so the wordmark aligns with the content edge. */
+  padding: 12px max(8px, calc(var(--gutter) - 22px)) 0;
+  transition: translate 0.6s var(--ease-out);
+  pointer-events: none;
+}
+
+.vx-nav.is-hidden {
+  translate: 0 -130%;
+}
+
+.vx-nav__bar {
+  --pill: 1;
+  --shift: 0px;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  max-width: calc(var(--container) - 2 * var(--gutter) + 44px);
+  height: 62px;
+  margin: 0 auto;
+  padding: 0 22px;
+  pointer-events: auto;
+}
+
+/* The glass pill is a separate layer that only scales — no layout changes, no CLS. */
+.vx-nav__bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  background-color: rgba(12, 12, 17, 0.66);
+  box-shadow: 0 24px 60px -28px rgba(0, 0, 0, 0.85);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  opacity: 0;
+  transform: scaleX(1);
+  transition:
+    transform 0.7s var(--ease-out),
+    opacity 0.5s var(--ease-out);
+}
+
+.vx-nav.is-scrolled .vx-nav__bar::before {
+  opacity: 1;
+  transform: scaleX(var(--pill));
+}
+
+.vx-nav__brand,
+.vx-nav__actions {
+  transition: transform 0.7s var(--ease-out);
+}
+
+.vx-nav.is-scrolled .vx-nav__brand {
+  transform: translateX(var(--shift));
+}
+
+.vx-nav.is-scrolled .vx-nav__actions {
+  /* Hug the pill's right edge (8px) once the bar condenses. */
+  transform: translateX(calc(var(--shift) * -1 + 14px));
+}
+
+.vx-nav__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  justify-self: start;
+  padding: 6px 4px;
+  border-radius: 10px;
+}
+
+.vx-nav__mark {
+  transition: transform 0.8s var(--ease-spring);
+}
+
+.vx-nav__brand:hover .vx-nav__mark {
+  transform: rotate(-12deg) scale(1.08);
+}
+
+.vx-nav__word {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+}
+
+.vx-nav__links ul {
+  display: flex;
+  gap: 2px;
+}
+
+.vx-nav__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 999px;
+  color: var(--text-2);
+  font-size: 13.5px;
+  font-weight: 450;
+  transition: color 0.3s;
+}
+
+.vx-nav__link:hover,
+.vx-nav__link.is-active {
+  color: var(--text);
+}
+
+.vx-nav__link .vx-roll {
+  position: relative;
+  z-index: 1;
+}
+
+.vx-nav__hover,
+.vx-nav__active {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.vx-nav__hover {
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.vx-nav__active {
+  background: rgba(255, 255, 255, 0.075);
+  box-shadow: inset 0 0 0 1px var(--line-2);
+}
+
+.vx-nav__active::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 5px;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: var(--blue);
+  box-shadow: 0 0 8px var(--blue);
+}
+
+.vx-nav__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.vx-nav__burger {
+  position: relative;
+  display: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.03);
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.vx-nav__burger:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.vx-nav__burger span {
+  position: absolute;
+  left: 50%;
+  width: 18px;
+  height: 1.5px;
+  margin-left: -9px;
+  border-radius: 2px;
+  background: var(--text);
+  transition: transform 0.45s var(--ease-out), width 0.45s var(--ease-out);
+}
+
+.vx-nav__burger span:first-child {
+  top: 19px;
+}
+
+.vx-nav__burger span:last-child {
+  top: 25px;
+  width: 12px;
+}
+
+.vx-nav__burger:hover span:last-child {
+  width: 18px;
+}
+
+@media (max-width: 1023px) {
+  .vx-nav__bar {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .vx-nav__links {
+    display: none;
+  }
+
+  .vx-nav__burger {
+    display: block;
+  }
+}
+
+@media (max-width: 520px) {
+  .vx-nav__cta {
+    display: none;
+  }
+
+  .vx-nav__bar {
+    height: 58px;
+    padding: 0 6px 0 16px;
+  }
+
+  .vx-nav.is-scrolled .vx-nav__actions {
+    transform: none;
+  }
+}

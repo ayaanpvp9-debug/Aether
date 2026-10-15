@@ -1,0 +1,118 @@
+.vx-acc {
+  border-top: 1px solid var(--line-2);
+}
+
+.vx-acc__item {
+  position: relative;
+  border-bottom: 1px solid var(--line-2);
+}
+
+.vx-acc__item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 1px;
+  width: 100%;
+  background: var(--spectrum);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.7s var(--ease-out);
+}
+
+.vx-acc__item.is-open::before {
+  transform: scaleX(1);
+}
+
+.vx-acc__trigger {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: clamp(14px, 2.4vw, 28px);
+  width: 100%;
+  padding: clamp(20px, 2.4vw, 30px) 4px;
+  text-align: left;
+}
+
+.vx-acc__index {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-3);
+  transition: color 0.3s;
+}
+
+.vx-acc__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.02rem, 1.5vw, 1.35rem);
+  font-weight: 450;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+  transition: transform 0.5s var(--ease-out), color 0.3s;
+}
+
+.vx-acc__icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line-2);
+  transition: background 0.4s var(--ease-out), border-color 0.4s, transform 0.5s var(--ease-out);
+}
+
+.vx-acc__icon span {
+  grid-area: 1 / 1;
+  width: 13px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 0.5s var(--ease-out);
+}
+
+.vx-acc__icon span:last-child {
+  transform: rotate(90deg);
+}
+
+.vx-acc__item.is-open .vx-acc__icon {
+  background: var(--text);
+  border-color: var(--text);
+  color: #07070a;
+  transform: rotate(180deg);
+}
+
+.vx-acc__item.is-open .vx-acc__icon span:last-child {
+  transform: rotate(0deg);
+}
+
+.vx-acc__item.is-open .vx-acc__index {
+  color: var(--blue);
+}
+
+@media (hover: hover) {
+  .vx-acc__trigger:hover .vx-acc__title {
+    transform: translateX(6px);
+  }
+
+  .vx-acc__trigger:hover .vx-acc__icon {
+    border-color: var(--line-3);
+  }
+}
+
+.vx-acc__panel {
+  overflow: hidden;
+}
+
+.vx-acc__content {
+  max-width: 62ch;
+  padding: 0 4px clamp(24px, 2.6vw, 34px) calc(clamp(14px, 2.4vw, 28px) + 22px);
+  color: var(--text-2);
+  font-size: 15.5px;
+  line-height: 1.7;
+}
+
+@media (max-width: 640px) {
+  .vx-acc__content {
+    padding-left: 4px;
+  }
+}

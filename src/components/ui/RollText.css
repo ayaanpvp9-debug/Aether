@@ -1,0 +1,35 @@
+.vx-roll {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  line-height: 1.2;
+  vertical-align: top;
+}
+
+.vx-roll__chars {
+  display: inline-flex;
+}
+
+.vx-roll__char {
+  position: relative;
+  display: inline-block;
+  transition: transform 0.5s var(--ease-out);
+  transition-delay: calc(var(--i) * 14ms);
+}
+
+.vx-roll__char::after {
+  content: attr(data-char);
+  position: absolute;
+  left: 0;
+  top: 100%;
+}
+
+@media (hover: hover) {
+  .vx-roll-host:hover .vx-roll__char {
+    transform: translateY(-100%);
+  }
+}
+
+.vx-roll-host:focus-visible .vx-roll__char {
+  transform: translateY(-100%);
+}

@@ -1,0 +1,28 @@
+.vx-marquee {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.vx-marquee__track {
+  display: flex;
+  flex: none;
+  width: max-content;
+  will-change: transform;
+}
+
+.vx-marquee__half {
+  display: flex;
+  flex: none;
+  align-items: center;
+}
+
+.vx-marquee.is-static {
+  justify-content: center;
+}
+
+.vx-marquee.is-static .vx-marquee__half + .vx-marquee__half {
+  display: none;
+}

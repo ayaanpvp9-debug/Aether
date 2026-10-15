@@ -1,0 +1,88 @@
+.vx-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #050507;
+  will-change: clip-path;
+}
+
+.vx-intro__inner {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.vx-intro__center {
+  display: grid;
+  justify-items: center;
+  gap: 22px;
+}
+
+.vx-intro__word {
+  display: flex;
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 8vw, 6.5rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.vx-intro__mask {
+  display: inline-block;
+  overflow: hidden;
+  padding: 0.06em 0;
+}
+
+.vx-intro__letter {
+  display: inline-block;
+}
+
+.vx-intro__line {
+  width: min(320px, 60vw);
+  height: 1px;
+  background: var(--spectrum);
+  transform-origin: left center;
+}
+
+.vx-intro__corner {
+  position: absolute;
+  max-width: 44vw;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  line-height: 1.5;
+}
+
+.vx-intro__corner--tl {
+  top: 28px;
+  left: var(--gutter);
+}
+
+.vx-intro__corner--tr {
+  top: 28px;
+  right: var(--gutter);
+  text-align: right;
+}
+
+.vx-intro__corner--bl {
+  bottom: 28px;
+  left: var(--gutter);
+}
+
+.vx-intro__corner--br {
+  bottom: 28px;
+  right: var(--gutter);
+  text-align: right;
+}
+
+.vx-intro__count {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.6rem);
+  font-weight: 300;
+  letter-spacing: -0.04em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}

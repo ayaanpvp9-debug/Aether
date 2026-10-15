@@ -1,0 +1,105 @@
+.vx-cursor {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.vx-cursor[data-visible='true'] {
+  opacity: 1;
+}
+
+.vx-cursor__ring,
+.vx-cursor__dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+.vx-cursor__circle {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  margin: -19px 0 0 -19px;
+  border-radius: 50%;
+  border: 1px solid rgba(245, 245, 247, 0.38);
+  transition:
+    width 0.45s var(--ease-out),
+    height 0.45s var(--ease-out),
+    margin 0.45s var(--ease-out),
+    background-color 0.35s,
+    border-color 0.35s,
+    opacity 0.3s,
+    scale 0.25s var(--ease-out);
+}
+
+.vx-cursor__label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #07070a;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.vx-cursor__dot {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: #fff;
+  mix-blend-mode: difference;
+  transition: opacity 0.25s, scale 0.3s var(--ease-out);
+}
+
+.vx-cursor[data-state='link'] .vx-cursor__circle {
+  width: 58px;
+  height: 58px;
+  margin: -29px 0 0 -29px;
+  border-color: rgba(245, 245, 247, 0.55);
+  background-color: rgba(245, 245, 247, 0.06);
+}
+
+.vx-cursor[data-state='link'] .vx-cursor__dot {
+  scale: 0.5;
+}
+
+.vx-cursor[data-state='label'] .vx-cursor__circle {
+  width: 92px;
+  height: 92px;
+  margin: -46px 0 0 -46px;
+  border-color: transparent;
+  background-color: var(--text);
+}
+
+.vx-cursor[data-state='label'] .vx-cursor__label {
+  opacity: 1;
+}
+
+.vx-cursor[data-state='label'] .vx-cursor__dot,
+.vx-cursor[data-state='text'] .vx-cursor__dot {
+  opacity: 0;
+}
+
+.vx-cursor[data-state='orb'] .vx-cursor__circle {
+  width: 84px;
+  height: 84px;
+  margin: -42px 0 0 -42px;
+  border-color: rgba(167, 139, 250, 0.8);
+  background-color: rgba(139, 92, 246, 0.1);
+}
+
+.vx-cursor[data-state='text'] .vx-cursor__circle {
+  opacity: 0;
+}
+
+.vx-cursor[data-pressed='true'] .vx-cursor__circle {
+  scale: 0.82;
+}

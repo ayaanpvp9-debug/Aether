@@ -1,0 +1,146 @@
+.vx-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: 12px clamp(18px, 5vw, 40px) max(24px, env(safe-area-inset-bottom));
+  overflow-y: auto;
+  background: #08080c;
+}
+
+.vx-menu:focus {
+  outline: none;
+}
+
+.vx-menu__glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(60vmax 60vmax at 100% 0%, rgba(139, 92, 246, 0.22), transparent 60%),
+    radial-gradient(50vmax 50vmax at 0% 100%, rgba(56, 189, 248, 0.14), transparent 60%);
+}
+
+.vx-menu__top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  padding-left: 6px;
+}
+
+.vx-menu__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+}
+
+.vx-menu__close {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin-right: 2px;
+  border-radius: 50%;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.04);
+  transition: transform 0.5s var(--ease-out), background 0.3s;
+}
+
+.vx-menu__close:hover {
+  transform: rotate(90deg);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.vx-menu__nav {
+  position: relative;
+  align-self: center;
+  padding: 24px 0;
+}
+
+.vx-menu__nav ol {
+  display: grid;
+}
+
+.vx-menu__link {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: clamp(10px, 2.2vh, 18px) 4px;
+  border-bottom: 1px solid var(--line);
+  color: var(--text-2);
+  transition: color 0.3s;
+}
+
+.vx-menu__link:hover,
+.vx-menu__link.is-active {
+  color: var(--text);
+}
+
+.vx-menu__index {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.vx-menu__label {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 8.4vw, 3.4rem);
+  font-weight: 500;
+  letter-spacing: -0.05em;
+  line-height: 1.05;
+}
+
+.vx-menu__link.is-active .vx-menu__index {
+  color: var(--blue);
+}
+
+.vx-menu__arrow {
+  color: var(--text-3);
+  transition: transform 0.4s var(--ease-out), color 0.3s;
+}
+
+.vx-menu__link:hover .vx-menu__arrow {
+  transform: translate(3px, -3px);
+  color: var(--text);
+}
+
+.vx-menu__footer {
+  position: relative;
+  display: grid;
+  gap: 22px;
+}
+
+.vx-menu__footer .vx-btn {
+  width: 100%;
+}
+
+.vx-menu__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 16px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.vx-menu__clock {
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.vx-menu__clock span,
+.vx-menu__socials em {
+  color: var(--text-3);
+  font-style: normal;
+}

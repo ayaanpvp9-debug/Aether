@@ -1,0 +1,257 @@
+.vx-btn {
+  --btn-h: 54px;
+  --btn-pad: 26px;
+  --btn-icon: 38px;
+  --btn-font: 14.5px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--btn-h);
+  padding: 0 var(--btn-pad);
+  border-radius: 999px;
+  font-size: var(--btn-font);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  line-height: 1;
+  white-space: nowrap;
+  isolation: isolate;
+  user-select: none;
+  -webkit-user-select: none;
+  will-change: transform;
+  transition: color 0.45s var(--ease-out);
+}
+
+.vx-btn--has-icon {
+  padding-right: calc((var(--btn-h) - var(--btn-icon)) / 2);
+}
+
+.vx-btn--sm {
+  --btn-h: 42px;
+  --btn-pad: 18px;
+  --btn-icon: 30px;
+  --btn-font: 13.5px;
+}
+
+.vx-btn--lg {
+  --btn-h: 62px;
+  --btn-pad: 30px;
+  --btn-icon: 46px;
+  --btn-font: 15.5px;
+}
+
+.vx-btn__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+  transition: box-shadow 0.5s var(--ease-out), border-color 0.4s;
+}
+
+/* Liquid fill that rises from below on hover. */
+.vx-btn__bg::before {
+  content: '';
+  position: absolute;
+  left: -15%;
+  right: -15%;
+  top: 100%;
+  height: 260%;
+  border-radius: 50%;
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.7s var(--ease-out);
+}
+
+.vx-btn__inner {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.vx-btn__label {
+  position: relative;
+  display: inline-block;
+  height: 1.25em;
+  overflow: hidden;
+  line-height: 1.25;
+}
+
+.vx-btn__label-text {
+  display: block;
+  transition: transform 0.55s var(--ease-out);
+}
+
+.vx-btn__label-text[data-text]::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 100%;
+}
+
+.vx-btn__icon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--btn-icon);
+  height: var(--btn-icon);
+  flex: none;
+  overflow: hidden;
+  border-radius: 50%;
+  transition: background 0.45s var(--ease-out), transform 0.5s var(--ease-out);
+}
+
+.vx-btn__glyph {
+  grid-area: 1 / 1;
+  transition: transform 0.55s var(--ease-out);
+}
+
+.vx-btn__glyph--b {
+  transform: translate(-190%, 190%);
+}
+
+.vx-btn__icon--down .vx-btn__glyph--b {
+  transform: translateY(-220%);
+}
+
+.vx-btn__spinner {
+  animation: vx-spin 0.9s linear infinite;
+}
+
+@media (hover: hover) {
+  .vx-btn:hover .vx-btn__label-text[data-text] {
+    transform: translateY(-100%);
+  }
+
+  .vx-btn:hover .vx-btn__bg::before {
+    transform: translate3d(0, -64%, 0);
+  }
+
+  .vx-btn:hover .vx-btn__glyph--a {
+    transform: translate(190%, -190%);
+  }
+
+  .vx-btn:hover .vx-btn__glyph--b {
+    transform: translate(0, 0);
+  }
+
+  .vx-btn:hover .vx-btn__icon--down .vx-btn__glyph--a {
+    transform: translateY(220%);
+  }
+}
+
+/* Primary — bright white pill, spectrum fill on hover */
+.vx-btn--primary {
+  color: #07070a;
+}
+
+.vx-btn--primary .vx-btn__bg {
+  background: var(--text);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.2) inset,
+    0 14px 40px -14px rgba(139, 92, 246, 0.6);
+}
+
+.vx-btn--primary .vx-btn__bg::before {
+  background: linear-gradient(100deg, #7c4dff 0%, #8b5cf6 30%, #38bdf8 100%);
+}
+
+.vx-btn--primary .vx-btn__icon {
+  background: #07070a;
+  color: var(--text);
+}
+
+@media (hover: hover) {
+  .vx-btn--primary:hover {
+    color: #fff;
+  }
+
+  .vx-btn--primary:hover .vx-btn__bg {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.25) inset,
+      0 18px 50px -12px rgba(56, 189, 248, 0.55);
+  }
+
+  .vx-btn--primary:hover .vx-btn__icon {
+    background: rgba(7, 7, 10, 0.85);
+  }
+}
+
+/* Ghost — glass outline, white fill on hover */
+.vx-btn--ghost {
+  color: var(--text);
+}
+
+.vx-btn--ghost .vx-btn__bg {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--line-2);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.vx-btn--ghost .vx-btn__bg::before {
+  background: var(--text);
+}
+
+.vx-btn--ghost .vx-btn__icon {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+@media (hover: hover) {
+  .vx-btn--ghost:hover {
+    color: #07070a;
+  }
+
+  .vx-btn--ghost:hover .vx-btn__bg {
+    border-color: transparent;
+  }
+
+  .vx-btn--ghost:hover .vx-btn__icon {
+    background: #07070a;
+    color: var(--text);
+  }
+}
+
+.vx-btn__ripple {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: rgba(139, 92, 246, 0.5);
+  animation: vx-ripple 0.75s var(--ease-out) forwards;
+}
+
+.vx-btn--ghost .vx-btn__ripple {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.vx-btn:disabled {
+  cursor: not-allowed;
+}
+
+.vx-btn:disabled:not(.is-loading) {
+  opacity: 0.45;
+}
+
+.vx-btn:focus-visible {
+  outline-offset: 4px;
+}
+
+@keyframes vx-ripple {
+  from {
+    transform: scale(0);
+    opacity: 0.75;
+  }
+  to {
+    transform: scale(30);
+    opacity: 0;
+  }
+}
+
+@keyframes vx-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

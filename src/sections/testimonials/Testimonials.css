@@ -1,0 +1,186 @@
+.vx-quotes {
+  overflow: hidden;
+}
+
+.vx-quotes__layout {
+  display: grid;
+  gap: 48px;
+}
+
+.vx-quotes__intro {
+  display: grid;
+  gap: 24px;
+  align-content: start;
+  justify-items: start;
+}
+
+.vx-quotes__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.vx-quotes__dots {
+  display: flex;
+  gap: 6px;
+  margin-left: 8px;
+}
+
+.vx-quotes__dot {
+  position: relative;
+  width: 34px;
+  height: 22px;
+  border-radius: 999px;
+  transition: width 0.5s var(--ease-out);
+}
+
+.vx-quotes__dot::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3px;
+  margin-top: -1.5px;
+  border-radius: 3px;
+  background: var(--line-3);
+}
+
+.vx-quotes__dot.is-active {
+  width: 64px;
+}
+
+.vx-quotes__fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3px;
+  margin-top: -1.5px;
+  border-radius: 3px;
+  background: var(--spectrum);
+  transform-origin: left;
+  animation: vx-fill linear forwards;
+}
+
+.vx-quotes__count {
+  margin-left: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.vx-quotes__stage {
+  position: relative;
+  padding: clamp(28px, 4vw, 56px);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(60% 80% at 90% 0%, rgba(139, 92, 246, 0.12), transparent 70%),
+    var(--surface);
+  overflow: hidden;
+}
+
+.vx-quotes__mark {
+  width: 56px;
+  height: 42px;
+  margin-bottom: 28px;
+  fill: rgba(167, 139, 250, 0.5);
+}
+
+.vx-quotes__viewport,
+.vx-quotes__sizer {
+  display: grid;
+}
+
+.vx-quotes__viewport > *,
+.vx-quotes__sizer > * {
+  grid-area: 1 / 1;
+}
+
+.vx-quotes__sizer {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.vx-quotes__figure {
+  display: grid;
+  gap: 36px;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.vx-quotes__figure:active {
+  cursor: grabbing;
+}
+
+.vx-quotes__text {
+  font-family: var(--font-serif);
+  font-size: clamp(1.7rem, 3.2vw, 2.9rem);
+  font-style: italic;
+  line-height: 1.18;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
+}
+
+.vx-quotes__person {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+.vx-quotes__avatar {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex: none;
+  border-radius: 50%;
+  color: #07070a;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.vx-quotes__person strong {
+  display: block;
+  font-weight: 550;
+}
+
+.vx-quotes__role {
+  display: block;
+  font-size: 13.5px;
+  color: var(--text-3);
+}
+
+.vx-quotes__sample {
+  margin-left: auto;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px dashed rgba(251, 191, 36, 0.4);
+  color: #fcd98a;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 1024px) {
+  .vx-quotes__layout {
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(48px, 6vw, 96px);
+    align-items: center;
+  }
+}
+
+@keyframes vx-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}

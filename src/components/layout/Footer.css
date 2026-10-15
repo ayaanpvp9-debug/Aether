@@ -1,0 +1,216 @@
+.vx-footer {
+  position: relative;
+  padding-top: clamp(96px, 12vw, 180px);
+  overflow: hidden;
+  border-top: 1px solid var(--line);
+  background:
+    radial-gradient(60% 60% at 15% 0%, rgba(139, 92, 246, 0.09), transparent 70%),
+    radial-gradient(50% 50% at 90% 10%, rgba(56, 189, 248, 0.06), transparent 70%);
+}
+
+.vx-footer__top {
+  display: grid;
+  gap: 64px;
+}
+
+.vx-footer__cta {
+  display: grid;
+  gap: 26px;
+  justify-items: start;
+}
+
+.vx-footer__headline {
+  max-width: 15ch;
+  font-family: var(--font-display);
+  font-size: clamp(2.1rem, 4vw, 3.8rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+
+.vx-footer__cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 40px 28px;
+}
+
+.vx-footer__col h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 450;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.vx-footer__col ul {
+  display: grid;
+  gap: 10px;
+}
+
+.vx-footer__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  color: var(--text-2);
+  transition: color 0.3s;
+}
+
+.vx-footer__link:hover {
+  color: var(--text);
+}
+
+.vx-footer__link-icon {
+  opacity: 0;
+  transform: translate(-4px, 4px);
+  transition: opacity 0.3s, transform 0.4s var(--ease-out);
+}
+
+.vx-footer__link:hover .vx-footer__link-icon,
+.vx-footer__link:focus-visible .vx-footer__link-icon {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+.vx-footer__placeholder {
+  font-size: 15px;
+  color: var(--text-3);
+  text-decoration: line-through;
+  text-decoration-color: rgba(245, 245, 247, 0.2);
+}
+
+.vx-footer__badge {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  margin-left: 8px;
+  padding: 0 7px;
+  border-radius: 999px;
+  border: 1px dashed rgba(251, 191, 36, 0.4);
+  color: #fcd98a;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.vx-footer__col h3 .vx-footer__badge {
+  margin-left: 0;
+}
+
+.vx-footer__note {
+  margin-top: 14px;
+  max-width: 26ch;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-3);
+}
+
+.vx-footer__info {
+  font-size: 15px;
+  color: var(--text-2);
+}
+
+.vx-footer__info li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.vx-footer__clock {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.vx-footer__wordmark {
+  --sx: 50%;
+  --sy: 50%;
+  position: relative;
+  display: grid;
+  margin-top: clamp(64px, 9vw, 120px);
+  font-family: var(--font-display);
+  /* Measured: text width ≈ 4.71 × font-size → fits the container at every breakpoint. */
+  font-size: min(18.4vw, 17.2rem);
+  font-weight: 700;
+  line-height: 0.78;
+  letter-spacing: -0.075em;
+  text-align: center;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.vx-footer__word {
+  grid-area: 1 / 1;
+  color: rgba(245, 245, 247, 0.05);
+}
+
+.vx-footer__word--lit {
+  background: radial-gradient(circle 22vw at var(--sx) var(--sy), #f5f5f7 0%, #a78bfa 30%, rgba(56, 189, 248, 0.35) 55%, rgba(245, 245, 247, 0.04) 75%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@media (hover: none) {
+  .vx-footer__word--lit {
+    background: linear-gradient(180deg, rgba(245, 245, 247, 0.9), rgba(139, 92, 246, 0.35) 70%, transparent);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+}
+
+.vx-footer__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px 32px;
+  padding: 28px 0 max(28px, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+  color: var(--text-3);
+  font-size: 12.5px;
+}
+
+.vx-footer__bottom p {
+  max-width: 70ch;
+}
+
+.vx-footer__totop {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text);
+  font-size: 13.5px;
+}
+
+.vx-footer__totop-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--line-2);
+  transition: transform 0.5s var(--ease-out), background 0.3s, color 0.3s;
+}
+
+.vx-footer__totop:hover .vx-footer__totop-icon {
+  transform: translateY(-4px);
+  background: var(--text);
+  color: #07070a;
+}
+
+@media (min-width: 1024px) {
+  .vx-footer__top {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr);
+    align-items: end;
+  }
+}

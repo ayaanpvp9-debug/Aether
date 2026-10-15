@@ -1,0 +1,566 @@
+.vx-contact {
+  position: relative;
+  overflow: hidden;
+}
+
+.vx-contact__glow {
+  position: absolute;
+  left: 50%;
+  top: 10%;
+  width: 90vmax;
+  height: 70vmax;
+  translate: -50% 0;
+  pointer-events: none;
+  background:
+    radial-gradient(40% 40% at 30% 40%, rgba(139, 92, 246, 0.12), transparent 70%),
+    radial-gradient(35% 35% at 70% 60%, rgba(56, 189, 248, 0.08), transparent 70%);
+}
+
+.vx-contact__layout {
+  position: relative;
+  display: grid;
+  gap: 56px;
+}
+
+.vx-contact__intro {
+  display: grid;
+  gap: 26px;
+  align-content: start;
+  justify-items: start;
+}
+
+.vx-contact__title {
+  max-width: 12ch;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5.6vw, 5.4rem);
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -0.06em;
+}
+
+.vx-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  max-width: 460px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+
+.vx-status strong {
+  color: var(--text);
+  font-weight: 550;
+}
+
+.vx-status__icon {
+  display: grid;
+  place-items: center;
+  margin-top: 1px;
+  color: var(--text-3);
+}
+
+.vx-status--online {
+  border-color: rgba(74, 222, 128, 0.3);
+  background: rgba(74, 222, 128, 0.05);
+}
+
+.vx-status--online .vx-status__icon {
+  color: var(--success);
+}
+
+.vx-status--offline {
+  border-color: rgba(251, 191, 36, 0.35);
+  background: rgba(251, 191, 36, 0.05);
+}
+
+.vx-status--offline .vx-status__icon {
+  color: var(--warning);
+}
+
+.vx-status__retry {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  margin-left: auto;
+  border-radius: 8px;
+  border: 1px solid var(--line-2);
+}
+
+.vx-contact__steps {
+  display: grid;
+  gap: 14px;
+  max-width: 460px;
+}
+
+.vx-contact__steps li {
+  display: flex;
+  gap: 14px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--text-2);
+}
+
+.vx-contact__steps svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--violet-2);
+}
+
+.vx-contact__steps strong {
+  color: var(--text);
+  font-weight: 550;
+}
+
+.vx-contact__direct {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-3);
+}
+
+.vx-contact__email {
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+/* ───────── Form ───────── */
+
+.vx-form-shell {
+  position: relative;
+}
+
+.vx-form {
+  position: relative;
+  display: grid;
+  gap: 26px;
+  padding: clamp(22px, 3vw, 40px);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--line-2);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)), rgba(16, 17, 22, 0.86);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 50px 120px -60px rgba(139, 92, 246, 0.35);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+
+.vx-form__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.vx-field,
+.vx-fieldset {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.vx-fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.vx-fieldset legend {
+  margin-bottom: 10px;
+  padding: 0;
+}
+
+.vx-field__optional {
+  margin-left: 6px;
+  color: var(--text-3);
+  opacity: 0.8;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.vx-field .vx-field__error,
+.vx-fieldset .vx-field__error,
+.vx-field__meta .vx-field__error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+}
+
+.vx-input {
+  width: 100%;
+  height: 54px;
+  padding: 0 18px;
+  border-radius: 14px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.025);
+  font-size: 15.5px;
+  transition:
+    border-color 0.3s var(--ease-out),
+    background 0.3s,
+    box-shadow 0.3s;
+}
+
+.vx-input::placeholder {
+  color: #5e5e69;
+}
+
+.vx-input:hover {
+  border-color: var(--line-3);
+}
+
+.vx-input:focus {
+  outline: none;
+  border-color: rgba(139, 92, 246, 0.75);
+  background: rgba(139, 92, 246, 0.04);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+}
+
+.has-error .vx-input,
+.has-error .vx-input:focus {
+  border-color: rgba(251, 113, 133, 0.65);
+}
+
+.has-error .vx-input:focus {
+  box-shadow: 0 0 0 4px rgba(251, 113, 133, 0.14);
+}
+
+.vx-textarea {
+  height: auto;
+  min-height: 140px;
+  padding: 16px 18px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.vx-field__meta {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.vx-field__count {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.vx-field__count.is-over {
+  color: var(--danger);
+}
+
+/* Chips (multi-select checkboxes) */
+.vx-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vx-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 42px;
+  padding: 0 16px 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 14px;
+  color: var(--text-2);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    border-color 0.3s,
+    background 0.3s,
+    color 0.3s,
+    transform 0.25s var(--ease-out);
+}
+
+.vx-chip:hover {
+  border-color: var(--line-3);
+  color: var(--text);
+}
+
+.vx-chip:active {
+  transform: scale(0.96);
+}
+
+.vx-chip input,
+.vx-budget input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.vx-chip__box {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  border: 1px solid var(--line-3);
+  transition:
+    background 0.3s,
+    border-color 0.3s;
+}
+
+.vx-chip__box svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: #07070a;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 12;
+  stroke-dashoffset: 12;
+  transition: stroke-dashoffset 0.35s var(--ease-out);
+}
+
+.vx-chip.is-checked {
+  border-color: rgba(139, 92, 246, 0.6);
+  background: rgba(139, 92, 246, 0.12);
+  color: var(--text);
+}
+
+.vx-chip.is-checked .vx-chip__box {
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--violet-2), var(--blue));
+}
+
+.vx-chip.is-checked .vx-chip__box svg {
+  stroke-dashoffset: 0;
+}
+
+.vx-chip:has(input:focus-visible),
+.vx-budget:has(input:focus-visible) {
+  outline: 2px solid var(--blue);
+  outline-offset: 3px;
+}
+
+/* Budget radio cards */
+.vx-budgets {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.vx-budget {
+  position: relative;
+  display: grid;
+  gap: 4px;
+  padding: 14px 14px 13px;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition:
+    border-color 0.3s,
+    transform 0.25s var(--ease-out);
+}
+
+.vx-budget:hover {
+  border-color: var(--line-3);
+}
+
+.vx-budget:active {
+  transform: scale(0.97);
+}
+
+.vx-budget.is-checked {
+  border-color: rgba(139, 92, 246, 0.7);
+}
+
+.vx-budget__glow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(139, 92, 246, 0.28), transparent 60%),
+    rgba(139, 92, 246, 0.06);
+  pointer-events: none;
+}
+
+.vx-budget__label,
+.vx-budget__hint {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.vx-budget__label {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.vx-budget__hint {
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.has-error .vx-chip,
+.has-error .vx-budget {
+  border-color: rgba(251, 113, 133, 0.45);
+}
+
+.vx-hp {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.vx-form__alert {
+  display: flex;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(251, 113, 133, 0.4);
+  background: rgba(251, 113, 133, 0.07);
+  color: var(--text-2);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.vx-form__alert > svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--danger);
+}
+
+.vx-form__alert strong {
+  color: var(--text);
+}
+
+.vx-form__alert.is-offline {
+  border-color: rgba(251, 191, 36, 0.4);
+  background: rgba(251, 191, 36, 0.06);
+}
+
+.vx-form__alert.is-offline > svg {
+  color: var(--warning);
+}
+
+.vx-form__alert-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.vx-form__submit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 24px;
+}
+
+.vx-form__note {
+  flex: 1;
+  min-width: 220px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text-3);
+}
+
+/* Success */
+.vx-form--success {
+  justify-items: start;
+  gap: 18px;
+  text-align: left;
+}
+
+.vx-success__check {
+  width: 68px;
+  height: 68px;
+  fill: none;
+  stroke: var(--success);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.vx-success__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 500;
+  letter-spacing: -0.05em;
+}
+
+.vx-success__text,
+.vx-success__note {
+  max-width: 52ch;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+
+.vx-success__note {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px dashed var(--line-3);
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.vx-success__ref {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.vx-success__ref code {
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(74, 222, 128, 0.35);
+  background: rgba(74, 222, 128, 0.06);
+  font-family: var(--font-mono);
+  font-size: 20px;
+  letter-spacing: 0.12em;
+}
+
+@media (min-width: 1024px) {
+  .vx-contact__layout {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(48px, 5vw, 96px);
+  }
+
+  .vx-contact__intro {
+    position: sticky;
+    top: 120px;
+    align-self: start;
+  }
+}
+
+@media (max-width: 720px) {
+  .vx-budgets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .vx-form__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .vx-form__submit .vx-btn {
+    width: 100%;
+  }
+}

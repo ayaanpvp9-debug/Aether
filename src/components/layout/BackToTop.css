@@ -1,0 +1,36 @@
+.vx-top {
+  position: fixed;
+  right: clamp(14px, 2.4vw, 32px);
+  bottom: max(18px, env(safe-area-inset-bottom));
+  z-index: 45;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(16, 17, 22, 0.72);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 16px 40px -18px rgba(0, 0, 0, 0.8);
+}
+
+.vx-top__ring {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-90deg);
+}
+
+.vx-top__track,
+.vx-top__value {
+  fill: none;
+  stroke-width: 1.5;
+}
+
+.vx-top__track {
+  stroke: var(--line-2);
+}
+
+.vx-top__value {
+  stroke: var(--blue);
+  stroke-linecap: round;
+}

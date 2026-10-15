@@ -1,0 +1,92 @@
+.vx-band {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  /* minmax(0, 1fr): never let the 14 000 px marquee track size the column. */
+  grid-template-columns: minmax(0, 1fr);
+  margin-top: -40px;
+  padding: 40px 0 20px;
+  overflow: hidden;
+}
+
+.vx-band__tape {
+  position: relative;
+  min-width: 0;
+  margin-inline: -4vw;
+  will-change: transform;
+}
+
+.vx-band__tape--main {
+  z-index: 2;
+  padding: clamp(14px, 1.8vw, 22px) 0;
+  border-block: 1px solid var(--line-2);
+  background: linear-gradient(180deg, rgba(20, 20, 28, 0.96), rgba(12, 12, 17, 0.96));
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.8);
+}
+
+.vx-band__tape--micro {
+  z-index: 1;
+  margin-top: -6px;
+  padding: 12px 0;
+  border-block: 1px solid rgba(139, 92, 246, 0.25);
+  background: linear-gradient(90deg, rgba(139, 92, 246, 0.14), rgba(56, 189, 248, 0.1));
+}
+
+.vx-band__item {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(22px, 3vw, 44px);
+  padding-right: clamp(22px, 3vw, 44px);
+}
+
+.vx-band__text {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 6vw, 5.6rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.vx-band__text--serif {
+  font-family: var(--font-serif);
+  font-size: clamp(2.4rem, 7vw, 6.6rem);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  background: linear-gradient(90deg, #c4b5fd, #7dd3fc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding-right: 0.08em;
+}
+
+.vx-band__spark {
+  width: clamp(22px, 2.6vw, 38px);
+  height: clamp(22px, 2.6vw, 38px);
+  flex: none;
+  fill: var(--violet-2);
+  animation: vx-rotate 10s linear infinite;
+}
+
+.vx-band__micro {
+  display: inline-flex;
+  align-items: center;
+  gap: 22px;
+  padding-right: 22px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--text-2);
+}
+
+.vx-band__micro i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--blue);
+}

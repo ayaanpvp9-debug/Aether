@@ -1,0 +1,25 @@
+/* Flex/block layout only: no line boxes → glyph heights don't change when the web font swaps in. */
+.vx-reveal {
+  display: inline-flex;
+  flex-wrap: wrap;
+  column-gap: 0.26em;
+}
+
+.vx-reveal__word {
+  display: inline-flex;
+  white-space: nowrap;
+}
+
+.vx-reveal__mask {
+  display: block;
+  overflow: hidden;
+  /* Room for descenders & italic overhang without visible clipping. */
+  padding: 0.08em 0.04em 0.14em;
+  margin: -0.08em -0.04em -0.14em;
+}
+
+.vx-reveal__glyph {
+  display: block;
+  transform-origin: 0% 100%;
+  will-change: transform;
+}
