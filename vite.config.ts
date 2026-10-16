@@ -2,37 +2,23 @@
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { createVeltrixApi, type VeltrixApi } from './server/middleware.ts';
-import type { Logger } from './server/config.ts';
 
 /**
- * Mounts the real inquiry API (server/) inside Vite's dev and preview servers,
- * so `npm run dev` is a complete full-stack environment in a single process.
+ * Mounts the site's API (server/ — the /api/health endpoint) inside Vite's dev
+ * and preview servers, so `npm run dev` matches production in a single process.
  */
 function veltrixApi(env: Record<string, string>): Plugin {
-  let api: VeltrixApi | undefined;
-
-  const mount = async (
-    middlewares: { use: (fn: VeltrixApi['middleware']) => void },
-    httpServer: { once(event: 'close', listener: () => void): unknown } | null,
-    logger: { info(msg: string): void; warn(msg: string): void; error(msg: string): void },
-  ) => {
-    const log: Logger = {
-      info: (m) => logger.info(`[veltrix] ${m}`),
-      warn: (m) => logger.warn(`[veltrix] ${m}`),
-      error: (m) => logger.error(`[veltrix] ${m}`),
-    };
-    api = await createVeltrixApi({ env: { ...env, ...process.env }, logger: log });
-    middlewares.use(api.middleware);
-    httpServer?.once('close', () => void api?.close());
+  const mount = (middlewares: { use: (fn: VeltrixApi['middleware']) => void }) => {
+    middlewares.use(createVeltrixApi({ env: { ...env, ...process.env } }).middleware);
   };
 
   return {
     name: 'veltrix-api',
-    async configureServer(server) {
-      await mount(server.middlewares, server.httpServer, server.config.logger);
+    configureServer(server) {
+      mount(server.middlewares);
     },
-    async configurePreviewServer(server) {
-      await mount(server.middlewares, server.httpServer, server.config.logger);
+    configurePreviewServer(server) {
+      mount(server.middlewares);
     },
   };
 }
@@ -126,7 +112,6 @@ export default defineConfig(({ mode, isSsrBuild }) => {
           rolldownOptions: {
             input: {
               index: 'server/index.ts',
-              'list-inquiries': 'server/list-inquiries.ts',
             },
           },
         }

@@ -23,5 +23,5 @@
     "noUncheckedSideEffectImports": true,
     "noImplicitOverride": true
   },
-  "include": ["src", "shared"]
+  "include": ["src"]
 }

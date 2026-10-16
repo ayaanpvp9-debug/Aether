@@ -20,7 +20,7 @@ interface MobileMenuProps {
   onClose: () => void;
 }
 
-const LINKS = [...NAV_ITEMS, { id: 'contact', label: 'Contact' }];
+const LINKS = NAV_ITEMS;
 
 function MenuClock() {
   const { time, zone } = formatClock(useNow());
@@ -100,13 +100,13 @@ function MenuLayer({ origin, active, onClose, onNavigate, focusTarget }: MenuLay
         exit={{ opacity: 0, transition: { duration: 0.15 } }}
       >
         <Button
-          href="#contact"
+          href="#work"
           onClick={(event) => {
             event.preventDefault();
-            onNavigate('contact');
+            onNavigate('work');
           }}
         >
-          Start a project
+          Explore work
         </Button>
         <div className="vx-menu__meta">
           <MenuClock />

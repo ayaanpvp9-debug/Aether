@@ -1,7 +1,6 @@
 import { motion } from 'motion/react';
 import { FAQ_ITEMS } from '../../content/faq';
 import { Accordion } from '../../components/ui/Accordion';
-import { Button } from '../../components/ui/Button';
 import { EASE_OUT } from '../../lib/motion';
 import './Faq.css';
 
@@ -26,9 +25,6 @@ export function FaqSection() {
             Questions, <span className="vx-serif">answered</span>.
           </motion.h2>
           <p className="vx-lede">Straight answers about how this studio concept works — including what is real and what is illustrative.</p>
-          <Button href="#contact" variant="ghost" size="md">
-            Ask something else
-          </Button>
         </div>
         <motion.div
           initial={{ opacity: 0, y: 40 }}

@@ -1,6 +1,6 @@
 /**
- * VELTRIX production server — serves the built client from dist/ and the
- * inquiry API from the same origin. Zero runtime dependencies.
+ * VELTRIX production server — serves the built client from dist/ plus a tiny
+ * health API (/api/health) from the same origin. Zero runtime dependencies.
  *
  *   npm run build && npm start
  */
@@ -47,7 +47,7 @@ const SECURITY_HEADERS: Record<string, string> = {
   ].join('; '),
 };
 
-const api = await createVeltrixApi({ logger });
+const api = createVeltrixApi();
 const serveStatic = createStaticHandler(distDir);
 
 const server = http.createServer((req, res) => {
@@ -91,9 +91,7 @@ function shutdown(signal: string) {
   shuttingDown = true;
   logger.info(`${signal} received — closing server.`);
   setTimeout(() => process.exit(1), 5_000).unref();
-  server.close(() => {
-    api.close().finally(() => process.exit(0));
-  });
+  server.close(() => process.exit(0));
   server.closeIdleConnections();
 }
 

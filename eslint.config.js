@@ -21,7 +21,7 @@ export default defineConfig([
     },
   },
   {
-    files: ['server/**/*.ts', 'shared/**/*.ts', 'tests/**/*.ts', 'vite.config.ts', 'eslint.config.js'],
+    files: ['server/**/*.ts', 'tests/**/*.ts', 'vite.config.ts', 'eslint.config.js'],
     extends: [js.configs.recommended, tseslint.configs.recommended],
     languageOptions: {
       ecmaVersion: 2022,

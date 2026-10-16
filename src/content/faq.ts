@@ -9,7 +9,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: 'real',
     question: 'Is VELTRIX a real studio?',
     answer:
-      'VELTRIX is a demonstration brand. This website is a fully working concept experience: the projects, testimonials and metrics are fictional or illustrative and are labelled as such. The interactions, the inquiry API and the database behind the contact form are real.',
+      'VELTRIX is a demonstration brand. This website is a fully working concept experience: the projects, testimonials and metrics are fictional or illustrative and are labelled as such. The interactions, the live API ping and the performance readouts are real.',
   },
   {
     id: 'engagement',
@@ -21,7 +21,7 @@ export const FAQ_ITEMS: FaqItem[] = [
     id: 'stack',
     question: 'Which technologies power experiences like this one?',
     answer:
-      'This site runs on React 19, TypeScript and Motion, with compositor-driven typography loops in the hero and a dependency-free Node API backed by SQLite. The principle is always the same: the smallest stack that delivers the experience.',
+      'This site runs on React 19, TypeScript and Motion, with compositor-driven typography loops in the hero and a dependency-free Node server. The principle is always the same: the smallest stack that delivers the experience.',
   },
   {
     id: 'performance',
@@ -36,15 +36,9 @@ export const FAQ_ITEMS: FaqItem[] = [
       'Semantic HTML, full keyboard support, visible focus states, readable contrast and reduced-motion alternatives are part of the baseline — not an afterthought. Overlays trap focus and close with Escape.',
   },
   {
-    id: 'inquiry',
-    question: 'What happens when I send the inquiry form?',
-    answer:
-      'Your brief is validated in the browser, validated again on the server, sanitised and stored in the site’s database with a unique reference code. No email is sent in this demo, and the site never claims delivery unless the server confirms storage.',
-  },
-  {
     id: 'startups',
     question: 'Do you work with early-stage teams?',
     answer:
-      'The model works for ambitious teams of any size. For early-stage products, a focused launch scope usually delivers the most impact per dollar — the budget selector in the form is a good place to start the conversation.',
+      'The model works for ambitious teams of any size. For early-stage products, a focused launch scope usually delivers the most impact per dollar.',
   },
 ];

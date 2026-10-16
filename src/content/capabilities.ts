@@ -20,7 +20,7 @@ export const CAPABILITIES: Capability[] = [
     id: 'stack',
     index: '02',
     title: 'Full-stack development',
-    summary: 'Typed front-ends, fast APIs and dependable data. This card pings the real API that powers the contact form.',
+    summary: 'Typed front-ends, fast APIs and dependable data. This card pings the real API behind this site.',
     tags: ['React', 'Node', 'SQL'],
   },
   {

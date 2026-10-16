@@ -12,7 +12,7 @@ import { MobileMenu } from './MobileMenu';
 import './Navbar.css';
 
 const PILL_WIDTH = 1080;
-const SPY_IDS = ['top', ...NAV_ITEMS.map((item) => item.id), 'results', 'testimonials', 'contact'];
+const SPY_IDS = ['top', ...NAV_ITEMS.map((item) => item.id), 'results', 'testimonials'];
 const PILL_SPRING = { type: 'spring', stiffness: 420, damping: 36 } as const;
 
 export function Navbar({ ready }: { ready: boolean }) {
@@ -112,8 +112,8 @@ export function Navbar({ ready }: { ready: boolean }) {
           </nav>
 
           <div className="vx-nav__actions">
-            <Button href="#contact" size="sm" className="vx-nav__cta" cursorLabel="Let’s talk">
-              Start a project
+            <Button href="#work" size="sm" className="vx-nav__cta" cursorLabel="Explore">
+              Explore work
             </Button>
             <button
               ref={burgerRef}

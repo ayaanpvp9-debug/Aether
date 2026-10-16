@@ -271,13 +271,13 @@ export function Hero({ ready }: { ready: boolean }) {
 
             <div className="vx-hero__ctas">
               <motion.span className="vx-hero__cta vx-hero__cta--primary" initial="hidden" animate={animateState} variants={rise} custom={T.ctas}>
-                <Button href="#contact" size="lg" cursorLabel="Let’s talk">
-                  Start a project
+                <Button href="#work" size="lg" cursorLabel="Explore">
+                  Explore work
                 </Button>
               </motion.span>
               <motion.span className="vx-hero__cta" initial="hidden" animate={animateState} variants={rise} custom={T.ctas + 0.1}>
-                <Button href="#work" size="lg" variant="ghost" icon="down">
-                  Explore work
+                <Button href="#lab" size="lg" variant="ghost" icon="down">
+                  Try the lab
                 </Button>
               </motion.span>
             </div>

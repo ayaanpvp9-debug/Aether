@@ -14,13 +14,20 @@ interface LogLine {
 const NODES = [
   { label: 'Browser', detail: 'React 19 · Motion' },
   { label: 'Static edge', detail: 'Brotli · immutable assets' },
-  { label: 'Node API', detail: 'Validation · rate limits' },
-  { label: 'Database', detail: 'SQLite · prepared statements' },
+  { label: 'Node server', detail: 'Zero runtime dependencies' },
+  { label: 'Health API', detail: 'JSON · uptime · no-store' },
 ];
 
 let lineId = 0;
 
-/** Live round-trip to this site's own API — real latency, real storage engine, honest failure states. */
+function formatUptime(seconds: number | undefined): string {
+  if (typeof seconds !== 'number' || !Number.isFinite(seconds)) return '—';
+  if (seconds < 90) return `${Math.round(seconds)} s`;
+  if (seconds < 90 * 60) return `${Math.round(seconds / 60)} min`;
+  return `${(seconds / 3600).toFixed(1)} h`;
+}
+
+/** Live round-trip to this site's own API — real latency, real server uptime, honest failure states. */
 export function StackPing() {
   const [status, setStatus] = useState<Status>('idle');
   const [log, setLog] = useState<LogLine[]>([{ id: 0, text: '$ awaiting first request…', tone: 'muted' }]);
@@ -41,11 +48,11 @@ export function StackPing() {
       const ms = Math.round(performance.now() - started);
       const type = res.headers.get('content-type') ?? '';
       if (!res.ok || !type.includes('application/json')) throw new Error(res.ok ? 'no API on this host' : `HTTP ${res.status}`);
-      const body = (await res.json()) as { storage?: string };
+      const body = (await res.json()) as { uptime?: number };
       setStatus('ok');
       setResponse(JSON.stringify(body, null, 2));
       setHistory((list) => [...list.slice(-15), ms]);
-      push(`GET /api/health · 200 OK · ${ms} ms · ${body.storage ?? 'storage'}`, 'ok');
+      push(`GET /api/health · 200 OK · ${ms} ms · up ${formatUptime(body.uptime)}`, 'ok');
     } catch (error) {
       setStatus('error');
       setResponse(null);

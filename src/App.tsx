@@ -12,7 +12,6 @@ import { Hero } from './features/hero/Hero';
 import { shouldPlayIntro } from './lib/intro';
 import { EASE_OUT } from './lib/motion';
 import { CapabilitiesSection } from './sections/capabilities/CapabilitiesSection';
-import { ContactSection } from './sections/contact/ContactSection';
 import { FaqSection } from './sections/faq/FaqSection';
 import { LabSection } from './sections/lab/LabSection';
 import { MarqueeSection } from './sections/marquee/MarqueeSection';
@@ -64,9 +63,6 @@ export function App() {
             </SectionBoundary>
             <SectionBoundary name="FAQ">
               <FaqSection />
-            </SectionBoundary>
-            <SectionBoundary name="contact">
-              <ContactSection />
             </SectionBoundary>
           </main>
           <Footer />

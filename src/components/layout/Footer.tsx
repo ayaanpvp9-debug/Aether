@@ -9,7 +9,7 @@ import { Button } from '../ui/Button';
 import { RollText } from '../ui/RollText';
 import './Footer.css';
 
-const EXPLORE = [...NAV_ITEMS, { id: 'results', label: 'Results' }, { id: 'contact', label: 'Contact' }];
+const EXPLORE = [...NAV_ITEMS, { id: 'results', label: 'Results' }];
 
 function FooterClock() {
   const { time, zone } = formatClock(useNow());
@@ -44,13 +44,13 @@ export function Footer() {
             transition={{ duration: 1, ease: EASE_OUT }}
           >
             <span className="vx-eyebrow">
-              <span className="vx-eyebrow__index">(10)</span> Next chapter
+              <span className="vx-eyebrow__index">(09)</span> Next chapter
             </span>
             <h2 id="footer-title" className="vx-footer__headline">
-              Have something <span className="vx-serif">ambitious</span> in mind?
+              Built to stand <span className="vx-serif">out</span>.
             </h2>
-            <Button href="#contact" cursorLabel="Let’s talk">
-              Start a project
+            <Button href="#work" cursorLabel="Explore">
+              Explore work
             </Button>
           </motion.div>
 
